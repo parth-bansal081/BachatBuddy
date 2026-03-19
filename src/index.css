@@ -1,0 +1,130 @@
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Gemini Pop Theme - Dark Mode */
+    --background: 222 47% 11%;
+    /* #0f172a - Slate 900 */
+    --foreground: 210 40% 98%;
+    /* #f8fafc - Slate 50 */
+
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Bold Primary - Brighter Teal for Dark Mode */
+    --primary: 175 100% 35%;
+    /* #14b8a6 - Teal 500 */
+    --primary-foreground: 222 47% 11%;
+    /* Dark text on primary */
+
+    --secondary: 43 96% 56%;
+    /* Gold */
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 217 33% 17%;
+    /* Slate 800 */
+    --muted-foreground: 215 20% 65%;
+    /* Slate 400 */
+
+    --accent: 43 96% 56%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 17%;
+    /* Slate 800 */
+    --input: 217 33% 17%;
+    --ring: 175 100% 35%;
+
+    --radius: 1rem;
+
+    /* Chart Colors - Adjusted for Dark Mode */
+    --chart-1: 175 100% 35%;
+    /* Teal */
+    --chart-2: 43 96% 56%;
+    /* Gold */
+    --chart-3: 217 91% 60%;
+    /* Blue */
+    --chart-4: 280 65% 60%;
+    /* Purple */
+    --chart-5: 340 75% 55%;
+    /* Pink */
+    --chart-5: 340 75% 55%;
+    /* Pink */
+
+    /* Sidebar Theme - Dark Mode Integration */
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 240 5% 96%;
+    --sidebar-primary: 175 100% 35%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 240 5% 96%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-ring: 175 100% 35%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased overflow-x-hidden;
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(at 0% 0%, hsla(175, 100%, 35%, 0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(43, 96%, 56%, 0.10) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(175, 100%, 35%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(43, 96%, 56%, 0.05) 0px, transparent 50%);
+    background-size: 150% 150%;
+    animation: aurora 20s ease infinite alternate;
+  }
+
+  @keyframes aurora {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 50% 100%;
+    }
+  }
+}
+
+@layer components {
+
+  /* Modern Pop Card: Clean border, "Pop" shadow on hover */
+  .card-pop {
+    @apply bg-white border border-slate-200 rounded-2xl transition-all duration-300;
+  }
+
+  .card-pop:hover {
+    @apply -translate-y-1 shadow-[4px_4px_0px_0px_#14b8a6] border-primary;
+  }
+
+  /* Pop Button: Solid, Tactile */
+  .btn-pop {
+    @apply bg-primary text-white font-bold py-2 px-4 rounded-xl shadow-[2px_2px_0px_0px_#00000033] hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#2dd4bf] active:translate-y-0 active:shadow-none transition-all;
+  }
+
+  /* Section Containers */
+  .section-container {
+    @apply bg-white/50 backdrop-blur-sm border border-slate-100 rounded-3xl p-6;
+  }
+}

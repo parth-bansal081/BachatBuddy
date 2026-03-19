@@ -1,0 +1,55 @@
+This project is a comprehensive AI-Driven Personal Finance Platform (provisionally titled BachatBuddy) designed to provide users with a "single pane of glass" view of their financial health. It moves beyond passive tracking by integrating real-time database management with intelligent financial coaching.
+
+Below is the technical and functional briefing of the platform as it stands today.
+
+1. Core Technology Stack
+The application is built using a modern, scalable, and type-safe architecture:
+
+Frontend Framework: React (TypeScript) for a robust, component-based user interface.
+
+Styling & UI: Tailwind CSS for a responsive, dark-mode-first aesthetic, utilizing Lucide React for professional iconography.
+
+Backend-as-a-Service (BaaS): Supabase (PostgreSQL) handling all data persistence, authentication, and real-time schema updates.
+
+Development Platform: Developed using Antigravity / Lovable, enabling rapid iteration between UI design and backend logic.
+
+Database Language: Advanced PL/pgSQL for handling relational constraints, unique user keys, and schema migrations.
+
+2. Integrated Features & Modules
+A. Smart Onboarding & Profile Management
+Financial Identity: Users define their monthly income and savings targets during the initial setup.
+
+Relational Mapping: A dedicated user_profiles table ensures that every dashboard metric is personalized to the logged-in user.
+
+Upsert Logic: The system is programmed to handle existing profiles gracefully, allowing users to update their financial goals without creating duplicate records.
+
+B. Multi-Account Command Center
+Direct Bank Mapping: Support for multiple accounts (e.g., SBI, HDFC, ICICI) categorized by type (Savings, Credit, etc.).
+
+Data Integrity: Implemented a last_four masking system for account security while maintaining identifiable records.
+
+Visual Branding: Account cards are dynamically styled with brand-specific colors (e.g., SBI Blue, HDFC Maroon) to mirror a professional banking experience.
+
+C. Automated Financial Tracking (Step 1)
+Recurring Bills Engine: A specialized recurring_bills module that tracks EMIs, rent, and subscriptions.
+
+Dashboard Integration: Upcoming bills are surfaced on the main dashboard with countdowns and "Mark as Paid" functionality that automatically triggers a transaction entry.
+
+D. AI Financial Coach (Step 3)
+Dynamic Intelligence: A proactive AI layer that analyzes the delta between Income, Savings Goal, and Current Spending.
+
+Burn Rate Calculation: The AI provides a daily spending limit (e.g., "To save ₹10,000, keep today's spend under ₹2,500").
+
+Category Awareness: The coach identifies high-spend categories (like "Eating Out") and issues warnings before they impact the user's savings target.
+
+E. Analytics & Visualization
+Budget Match Score: A high-fidelity gauge chart (Circular Progress) that calculates how closely current spending aligns with the user's budget goals.
+
+Category Breakdown: A dynamic pie chart (with error-boundary protection) that visualizes spending distribution.
+
+3. Advanced Roadmap: "The Professional Way"
+We are currently transitioning the app from manual/simulated data to Live Financial Integration:
+
+Account Aggregator (AA) Implementation: Moving toward a Setu or Finvu integration to fetch real-time, RBI-regulated transaction data via OTP-based consent.
+
+Email/SMS Parsing: Exploring non-invasive background tracking of transaction alerts for a seamless, "zero-input" user experience.
