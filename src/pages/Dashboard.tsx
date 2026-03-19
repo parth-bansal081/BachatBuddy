@@ -477,7 +477,14 @@ const Dashboard = () => {
 
       {/* Powered AI Insights Panel */}
       <MotionWrapper delay={0.46}>
-        <AIInsightsPanel />
+        <AIInsightsPanel
+          budgets={currentBudgets}
+          transactions={filteredTransactions}
+          income={income}
+          savingsTarget={savingsTarget}
+          currencyCode={currencyCode}
+          currencySymbol={currencySymbol}
+        />
       </MotionWrapper>
 
       {/* Charts Grid */}

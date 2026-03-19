@@ -19,7 +19,7 @@ interface Insight {
   icon: React.ReactNode;
 }
 
-export function AIInsightsPanel({ budgets, transactions, income, savingsTarget = 0, currencyCode, currencySymbol = "₹" }: AIInsightsPanelProps) {
+export function AIInsightsPanel({ budgets = [], transactions = [], income = 0, savingsTarget = 0, currencyCode, currencySymbol = "₹" }: AIInsightsPanelProps) {
   const [insights, setInsights] = useState<Insight[]>([]);
 
   useEffect(() => {
