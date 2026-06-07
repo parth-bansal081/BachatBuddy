@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, TrendingUp, TrendingDown, AlertCircle, ArrowRight } from "lucide-react";
 import { Transaction } from "@/lib/data";
 import { startOfWeek, subWeeks, isSameWeek } from "date-fns";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 
 interface SmartInsightCardProps {

@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { Layout } from "@/components/Layout";
+import { Layout } from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import "./i18n"; // Import i18n config
 import Index from "./pages/Index";
@@ -18,7 +18,7 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import { Session } from "@supabase/supabase-js";
-import { RequiresOnboarding } from "@/components/RequiresOnboarding";
+import { RequiresOnboarding } from "@/components/shared/RequiresOnboarding";
 
 const queryClient = new QueryClient();
 

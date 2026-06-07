@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ArrowRight, Building2, Sparkles, Globe } from "lucide-react";
-import { BankSyncButton } from "@/components/BankSyncButton";
+import { BankSyncButton } from "@/components/shared/BankSyncButton";
 import { useTranslation } from "react-i18next";
 
 const Onboarding = () => {

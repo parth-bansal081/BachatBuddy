@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { BudgetGoal, Transaction, formatCurrency } from "@/lib/data";
 import ReactMarkdown from 'react-markdown';
-import { SpendingChart } from "./SpendingChart";
+import { SpendingChart } from "../charts/SpendingChart";
 
 interface AIChatbotProps {
   budgets: BudgetGoal[];

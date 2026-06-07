@@ -5,12 +5,12 @@ import { Building2, Plus, Loader2, Wallet } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CategoryPieChart } from "@/components/CategoryPieChart";
-import { BudgetMatchGauge } from "@/components/BudgetMatchGauge";
-import { BankSyncButton } from "@/components/BankSyncButton";
+import { CategoryPieChart } from "@/components/charts/CategoryPieChart";
+import { BudgetMatchGauge } from "@/components/charts/BudgetMatchGauge";
+import { BankSyncButton } from "@/components/shared/BankSyncButton";
 import { defaultBudgets, Transaction } from "@/lib/data";
 import { useNavigate } from "react-router-dom";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { toast } from "sonner";
 
 // Simple bank color mapping

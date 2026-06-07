@@ -9,7 +9,7 @@ import { User, Bell, Shield, Wallet, CreditCard, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import SubscriptionManager from "@/components/SubscriptionManager";
+import SubscriptionManager from "@/components/bills/SubscriptionManager";
 import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { useUserProfile } from "@/hooks/useUserProfile";

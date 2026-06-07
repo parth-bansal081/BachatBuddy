@@ -1,30 +1,30 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Wallet, TrendingDown, PiggyBank, Plus } from "lucide-react";
-import { SummaryCard } from "@/components/SummaryCard";
-import { BudgetProgress } from "@/components/BudgetProgress";
-import { TransactionTable } from "@/components/TransactionTable";
-import { SpendingChart } from "@/components/SpendingChart";
-import { CategoryPieChart } from "@/components/CategoryPieChart";
-import { AIInsightsPanel } from "@/components/AIInsightsPanel";
-import { ProjectedSpendingChart } from "@/components/ProjectedSpendingChart";
-import { AIChatbot } from "@/components/AIChatbot";
-import { AddExpenseForm } from "@/components/AddExpenseForm";
-import { BudgetAccuracyChart } from "@/components/BudgetAccuracyChart";
-import { BudgetBurnRate } from "@/components/BudgetBurnRate";
-import { AccountSwitcher } from "@/components/AccountSwitcher";
-import { DateRangeFilter, DateRange } from "@/components/DateRangeFilter";
-import { SavingsGoalProgress } from "@/components/SavingsGoalProgress";
-import { RecurringBills } from "@/components/RecurringBills";
+import { SummaryCard } from "@/components/dashboard/SummaryCard";
+import { BudgetProgress } from "@/components/dashboard/BudgetProgress";
+import { TransactionTable } from "@/components/transactions/TransactionTable";
+import { SpendingChart } from "@/components/charts/SpendingChart";
+import { CategoryPieChart } from "@/components/charts/CategoryPieChart";
+import { AIInsightsPanel } from "@/components/ai/AIInsightsPanel";
+import { ProjectedSpendingChart } from "@/components/charts/ProjectedSpendingChart";
+import { AIChatbot } from "@/components/ai/AIChatbot";
+import { AddExpenseForm } from "@/components/transactions/AddExpenseForm";
+import { BudgetAccuracyChart } from "@/components/charts/BudgetAccuracyChart";
+import { BudgetBurnRate } from "@/components/dashboard/BudgetBurnRate";
+import { AccountSwitcher } from "@/components/dashboard/AccountSwitcher";
+import { DateRangeFilter, DateRange } from "@/components/shared/DateRangeFilter";
+import { SavingsGoalProgress } from "@/components/dashboard/SavingsGoalProgress";
+import { RecurringBills } from "@/components/bills/RecurringBills";
 import { BudgetGoal, Transaction, Category, defaultBudgets, defaultTransactions } from "@/lib/data";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { SmartInsightCard } from "@/components/SmartInsightCard";
-import { SafeToSpendCard } from "@/components/SafeToSpendCard";
-import { RecentTransactionsList } from "@/components/RecentTransactionsList";
-import { BudgetVarianceChart } from "@/components/BudgetVarianceChart";
+import { SmartInsightCard } from "@/components/ai/SmartInsightCard";
+import { SafeToSpendCard } from "@/components/dashboard/SafeToSpendCard";
+import { RecentTransactionsList } from "@/components/transactions/RecentTransactionsList";
+import { BudgetVarianceChart } from "@/components/charts/BudgetVarianceChart";
 import { Download, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -35,10 +35,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { subDays, startOfMonth, isAfter, parseISO, format, isSameMonth } from "date-fns";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { GeminiSparkle } from "@/components/ui/GeminiSparkle";
 import { Card, CardContent } from "@/components/ui/card";
-import { MotionWrapper } from "@/components/MotionWrapper";
+import { MotionWrapper } from "@/components/shared/MotionWrapper";
 
 const Dashboard = () => {
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);

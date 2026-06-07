@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { TransactionTable } from "@/components/TransactionTable";
-import { AddExpenseForm } from "@/components/AddExpenseForm";
+import { TransactionTable } from "@/components/transactions/TransactionTable";
+import { AddExpenseForm } from "@/components/transactions/AddExpenseForm";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
 import { Transaction, Category } from "@/lib/data";
-import { DateRangeFilter, DateRange } from "@/components/DateRangeFilter";
+import { DateRangeFilter, DateRange } from "@/components/shared/DateRangeFilter";
 import { subDays, startOfMonth, isAfter, parseISO } from "date-fns";
 import {
   Dialog,
