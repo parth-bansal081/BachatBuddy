@@ -1,0 +1,20 @@
+audit_task:
+  description: >
+    1. Parse the provided {setu_json} transaction data.
+    2. Extract all income and categorize all expenses.
+    3. Identify recurring subscriptions (e.g., Netflix, Hotstar, Gym) and potential 'spending leaks' like excessive small UPI transfers.
+    4. Summarize the total income, total spent on needs, and total spent on wants.
+  expected_output: >
+    A comprehensive audit report including a breakdown of income, expenses, and a list of identified recurring subscriptions and spending leaks.
+  agent: auditor
+
+planning_task:
+  description: >
+    1. Use the audit report from the Auditor.
+    2. applying the 50/30/20 rule to the current data.
+    3. Generate a 3-sentence actionable savings plan tailored for the Indian context (INR).
+  expected_output: >
+    A 3-sentence actionable savings plan in INR.
+  agent: strategist
+  context:
+    - audit_task
