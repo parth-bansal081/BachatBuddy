@@ -23,8 +23,9 @@ export function BudgetOrbSystem({ budgets, radius = 5 }: Props) {
   const groupRef = useRef<THREE.Group>(null);
 
   const orbData = useMemo(() => {
-    const totalBudget = budgets.reduce((sum, b) => sum + Math.max(0, b.budget), 0) || 1;
-    return budgets.map((b, i) => {
+    const cleanBudgets = (budgets || []).filter((b) => b !== undefined && b !== null);
+    const totalBudget = cleanBudgets.reduce((sum, b) => sum + Math.max(0, b.budget), 0) || 1;
+    return cleanBudgets.map((b, i) => {
       const allocation = Math.max(0, b.budget) / totalBudget;
       const spentRatio = Math.min(1, b.spent / Math.max(1, b.budget));
       let color = new THREE.Color(CHART_COLORS[i % CHART_COLORS.length]);

@@ -23,17 +23,19 @@ interface Props {
 }
 
 export function GoalTower({ goal, position = [0, 0, 0] }: Props) {
-  const progress = Math.min(1, goal.current / Math.max(1, goal.target));
+  const progress = Math.min(1, (goal?.current || 0) / Math.max(1, goal?.target || 1));
   const towerHeight = 5;
-  const segmentHeight = towerHeight / (goal.milestones.length || 1);
+  const milestones = goal?.milestones || [];
+  const segmentHeight = towerHeight / (milestones.length || 1);
 
   return (
     <group position={position}>
-      {goal.milestones.map((milestone, i) => {
-        const milestoneProgress = Math.min(1, goal.current / milestone);
-        const isCompleted = goal.current >= milestone;
+      {milestones.map((milestone, i) => {
+        if (milestone === undefined || milestone === null) return null;
+        const milestoneProgress = Math.min(1, (goal?.current || 0) / milestone);
+        const isCompleted = (goal?.current || 0) >= milestone;
         const isCurrentSegment = 
-          goal.current >= (goal.milestones[i - 1] || 0) && goal.current < milestone;
+          (goal?.current || 0) >= (milestones[i - 1] || 0) && (goal?.current || 0) < milestone;
 
         return (
           <TowerSegment

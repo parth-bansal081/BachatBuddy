@@ -74,7 +74,8 @@ function Bar({ item, index, maxValue, totalBars, width, maxHeight }: {
 }
 
 export function ThreeBarChart({ data, width = 8, maxHeight = 4 }: Props) {
-  const maxValue = useMemo(() => Math.max(...data.map((d) => d.value), 1), [data]);
+  const cleanData = useMemo(() => (data || []).filter((d) => d !== undefined && d !== null), [data]);
+  const maxValue = useMemo(() => Math.max(...cleanData.map((d) => d.value), 1), [cleanData]);
 
   return (
     <group aria-label="Bar chart showing spending over time">
@@ -84,13 +85,13 @@ export function ThreeBarChart({ data, width = 8, maxHeight = 4 }: Props) {
           <meshBasicMaterial color="#1e293b" transparent opacity={0.3} />
         </mesh>
       ))}
-      {data.map((item, i) => (
+      {cleanData.map((item, i) => (
         <Bar
           key={item.label}
           item={item}
           index={i}
           maxValue={maxValue}
-          totalBars={data.length}
+          totalBars={cleanData.length}
           width={width}
           maxHeight={maxHeight}
         />

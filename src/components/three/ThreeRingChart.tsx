@@ -87,22 +87,23 @@ function Segment({
 }
 
 export function ThreeRingChart({ segments, radius = 3 }: Props) {
+  const cleanSegments = useMemo(() => (segments || []).filter((s) => s !== undefined && s !== null), [segments]);
   const totalValue = useMemo(
-    () => segments.reduce((s, seg) => s + seg.value, 0) || 1,
-    [segments]
+    () => cleanSegments.reduce((s, seg) => s + seg.value, 0) || 1,
+    [cleanSegments]
   );
 
   return (
     <group aria-label="Ring chart showing category distribution">
-      {segments.map((item, i) => (
+      {cleanSegments.map((item, i) => (
         <Segment
           key={item.label}
           item={item}
           index={i}
-          total={segments.length}
+          total={cleanSegments.length}
           radius={radius}
           totalValue={totalValue}
-          segments={segments}
+          segments={cleanSegments}
         />
       ))}
       <Html center position={[0, 0, 0]}>
