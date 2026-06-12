@@ -1,0 +1,129 @@
+<h2>Phase 2 &mdash; Data Storytelling</h2>
+<p class="subtitle">Transaction Flow + Budget Orbs + Goal Towers</p>
+
+<div class="section">
+  <h3>New Components</h3>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px">
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:24px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">TransactionFlow</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          3D ribbon through space representing money flow<br>
+          &bull; TubeGeometry along a spline curve<br>
+          &bull; Tube thickness = transaction amount<br>
+          &bull; Each segment colored by category<br>
+          &bull; Hover: show tooltip with details<br>
+          &bull; Scrub-through time via scroll/drag<br>
+          &bull; Floating transaction "nodes" on the ribbon
+        </div>
+        <div style="margin-top:12px; background:#1e293b; border-radius:6px; padding:8px 12px; font-size:11px; font-family:monospace; color:#a5f3fc">
+          &lt;TransactionFlow<br>
+          &nbsp;&nbsp;transactions={txns}<br>
+          &nbsp;&nbsp;timeRange="month"<br>
+          /&gt;
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:24px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">BudgetOrb</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          Floating 3D spheres for budget categories<br>
+          &bull; Orbit around a central point<br>
+          &bull; Size = budget allocation %<br>
+          &bull; Color shifts from green → amber → red<br>
+          &bull; Pulse animation when near limit<br>
+          &bull; Click: expand to show details<br>
+          &bull; Drag: adjust budget allocation
+        </div>
+        <div style="margin-top:12px; background:#1e293b; border-radius:6px; padding:8px 12px; font-size:11px; font-family:monospace; color:#a5f3fc">
+          &lt;BudgetOrbSystem<br>
+          &nbsp;&nbsp;budgets={categories}<br>
+          &nbsp;&nbsp;radius={2}<br>
+          /&gt;
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:24px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">GoalTower</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          3D towers representing savings goals<br>
+          &bull; Stacked box geometry, each segment = milestone<br>
+          &bull; Height = % progress toward goal<br>
+          &bull; Unbuilt segments shown as wireframe<br>
+          &bull; Particles orbit completed milestones<br>
+          &bull; Camera zooms in on click for details<br>
+          &bull; Animated construction on progress update
+        </div>
+        <div style="margin-top:12px; background:#1e293b; border-radius:6px; padding:8px 12px; font-size:11px; font-family:monospace; color:#a5f3fc">
+          &lt;GoalTower<br>
+          &nbsp;&nbsp;goal={savingsGoal}<br>
+          &nbsp;&nbsp;showMilestones<br>
+          /&gt;
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:24px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">ThreeLineChart</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          3D time-series line chart<br>
+          &bull; Extruded line along time axis (X)<br>
+          &bull; Y = value, Z = category (depth layers)<br>
+          &bull; Gradient fill below the line<br>
+          &bull; Animated draw-in on mount<br>
+          &bull; Data point spheres at key events<br>
+          &bull; Replaces ProjectedSpendingChart
+        </div>
+        <div style="margin-top:12px; background:#1e293b; border-radius:6px; padding:8px 12px; font-size:11px; font-family:monospace; color:#a5f3fc">
+          &lt;ThreeLineChart<br>
+          &nbsp;&nbsp;series={projections}<br>
+          &nbsp;&nbsp;timeRange="6m"<br>
+          /&gt;
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Pages Upgraded</h3>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px">
+    <div style="background:#0a1628; border-radius:12px; padding:20px; border:1px solid #14b8a6">
+      <div style="color:#14b8a6; font-size:13px; font-weight:600; margin-bottom:10px">Transactions Page</div>
+      <div style="font-size:11px; color:#94a3b8; line-height:1.8">
+        + TransactionFlow ribbon as page header<br>
+        + ThreeLineChart replaces ProjectedSpendingChart<br>
+        + TransactionTable remains 2D below 3D area<br>
+        + ParticleField background
+      </div>
+    </div>
+    <div style="background:#0a1628; border-radius:12px; padding:20px; border:1px solid #14b8a6">
+      <div style="color:#14b8a6; font-size:13px; font-weight:600; margin-bottom:10px">Budget Planner Page</div>
+      <div style="font-size:11px; color:#94a3b8; line-height:1.8">
+        + BudgetOrbSystem replaces budget cards<br>
+        + Keep BudgetProgress + BudgetVarianceChart (2D)<br>
+        + GoalTower for each savings goal<br>
+        + Drag-to-adjust budget interaction
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Files Touched</h3>
+  <div style="font-size:12px; color:#94a3b8; line-height:2">
+    <div><span style="color:#14b8a6">New:</span> src/components/three/TransactionFlow.tsx</div>
+    <div><span style="color:#14b8a6">New:</span> src/components/three/BudgetOrbSystem.tsx</div>
+    <div><span style="color:#14b8a6">New:</span> src/components/three/GoalTower.tsx</div>
+    <div><span style="color:#14b8a6">New:</span> src/components/three/ThreeLineChart.tsx</div>
+    <div><span style="color:#fbbf24">Modify:</span> src/pages/Transactions.tsx</div>
+    <div><span style="color:#fbbf24">Modify:</span> src/pages/BudgetPlanner.tsx</div>
+    <div><span style="color:#fbbf24">Modify:</span> src/components/three/index.ts</div>
+  </div>
+</div>

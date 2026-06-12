@@ -52,7 +52,7 @@ export function GoalTower({ goal, position = [0, 0, 0] }: Props) {
       })}
       <Html center position-y={towerHeight / 2 + 0.5}>
         <div className="text-center pointer-events-none select-none">
-          <p className="text-xs text-slate-400">{goal.category} Goal</p>
+          <p className="text-xs text-slate-400">{goal?.category || "Savings"} Goal</p>
           <p className="text-lg font-bold text-teal-400">
             {(progress * 100).toFixed(0)}%
           </p>

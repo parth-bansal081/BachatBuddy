@@ -74,7 +74,16 @@ function Bar({ item, index, maxValue, totalBars, width, maxHeight }: {
 }
 
 export function ThreeBarChart({ data, width = 8, maxHeight = 4 }: Props) {
-  const cleanData = useMemo(() => (data || []).filter((d) => d !== undefined && d !== null), [data]);
+  const cleanData = useMemo(() => {
+    return (data || [])
+      .filter((d): d is BarData => d !== undefined && d !== null && typeof d === "object")
+      .map((d) => ({
+        label: d?.label || "Unknown",
+        value: Number(d?.value) || 0,
+        color: d?.color,
+      }));
+  }, [data]);
+
   const maxValue = useMemo(() => Math.max(...cleanData.map((d) => d.value), 1), [cleanData]);
 
   return (

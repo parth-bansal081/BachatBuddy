@@ -1,0 +1,103 @@
+<h2>Phase 1 &mdash; 3D Foundation Components</h2>
+<p class="subtitle">Shared library + Dashboard enhancement</p>
+
+<div class="section">
+  <h3>Component Library (src/components/three/)</h3>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px">
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:24px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">ThreeScene</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          Wrapper for every R3F Canvas<br>
+          &bull; Responsive sizing (fills parent)<br>
+          &bull; Camera defaults + controls (OrbitControls)<br>
+          &bull; Bachat-green ambient lighting<br>
+          &bull; Error boundary + WebGL fallback<br>
+          &bull; Performance monitor (FPS, auto-downgrade)
+        </div>
+        <div style="margin-top:12px; background:#1e293b; border-radius:6px; padding:8px 12px; font-size:11px; font-family:monospace; color:#a5f3fc">
+          &lt;ThreeScene&gt;<br>
+          &nbsp;&nbsp;&lt;BarChart data={...} /&gt;<br>
+          &nbsp;&nbsp;&lt;ParticleField /&gt;<br>
+          &lt;/ThreeScene&gt;
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:24px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">ThreeBarChart</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          Animated 3D bar chart replacing Recharts<br>
+          &bull; Extruded bars with rounded caps<br>
+          &bull; Color = category, height = amount<br>
+          &bull; Hover: bar lifts + glows<br>
+          &bull; Label planes floating above each bar<br>
+          &bull; Props: data[], width, height, theme
+        </div>
+        <div style="margin-top:12px; background:#1e293b; border-radius:6px; padding:8px 12px; font-size:11px; font-family:monospace; color:#a5f3fc">
+          &lt;ThreeBarChart<br>
+          &nbsp;&nbsp;data={spendingData}<br>
+          &nbsp;&nbsp;width={600} height={300}<br>
+          /&gt;
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:24px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">ParticleField</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          Ambient floating particle system<br>
+          &bull; Shader-based GPU particles (thousands)<br>
+          &bull; Gentle drift + cursor attraction<br>
+          &bull; Color palette: bachat-green gradients<br>
+          &bull; Optional data-driven: particles = transactions<br>
+          &bull; Props: count, spread, speed, cursorReactive
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:24px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">ThreeRingChart</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          3D donut/ring for category breakdown<br>
+          &bull; Extruded torus segments (TorusGeometry)<br>
+          &bull; Each segment = category, height = %<br>
+          &bull; Hover: segment extends outward<br>
+          &bull; Center: total amount text (Html overlay)<br>
+          &bull; Animated entrance (segments rise in sequence)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Dashboard Page Upgrade</h3>
+  <div style="display:flex; gap:16px">
+    <div style="flex:1; background:#0a1628; border-radius:12px; padding:24px; text-align:center">
+      <div style="color:#64748b; font-size:12px; margin-bottom:12px">CURRENT</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px">
+        <div style="background:#1e293b; border-radius:6px; padding:20px 8px; font-size:11px; color:#94a3b8">Summary Cards</div>
+        <div style="background:#1e293b; border-radius:6px; padding:20px 8px; font-size:11px; color:#94a3b8">Category Pie</div>
+        <div style="background:#1e293b; border-radius:6px; padding:20px 8px; font-size:11px; color:#94a3b8">Spending Chart</div>
+        <div style="background:#1e293b; border-radius:6px; padding:20px 8px; font-size:11px; color:#94a3b8">AI Insight Card</div>
+      </div>
+      <div style="color:#64748b; font-size:10px">Recharts + shadcn/card</div>
+    </div>
+    <div style="color:#14b8a6; font-size:28px; display:flex; align-items:center">&#x2192;</div>
+    <div style="flex:1; background:#0a1628; border-radius:12px; padding:24px; text-align:center; border:1px solid #14b8a6">
+      <div style="color:#14b8a6; font-size:12px; margin-bottom:12px">PHASE 1</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px">
+        <div style="background:#0f172a; border:1px solid #0d9488; border-radius:6px; padding:20px 8px; font-size:11px; color:#5eead4">Summary Cards (2D)</div>
+        <div style="background:#0f172a; border:1px solid #0d9488; border-radius:6px; padding:20px 8px; font-size:11px; color:#5eead4">ThreeRingChart</div>
+        <div style="background:#0f172a; border:1px solid #0d9488; border-radius:6px; padding:20px 8px; font-size:11px; color:#5eead4">ThreeBarChart</div>
+        <div style="background:#0f172a; border:1px solid #0d9488; border-radius:6px; padding:20px 8px; font-size:11px; color:#5eead4">AI Card + Particles</div>
+      </div>
+      <div style="color:#14b8a6; font-size:10px">R3F Canvas with ParticleField in background,<br>3D charts replace Recharts</div>
+    </div>
+  </div>
+</div>

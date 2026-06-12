@@ -3,6 +3,7 @@ import { Progress } from "@/components/ui/progress";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { PiggyBank, Target, Loader2 } from "lucide-react";
 import { formatCurrency } from "@/lib/data";
+import { cn } from "@/lib/utils";
 
 interface SavingsGoalProgressProps {
     income: number;
@@ -11,6 +12,7 @@ interface SavingsGoalProgressProps {
     currencyCode?: string;
     currencySymbol?: string;
     isLoading?: boolean;
+    className?: string;
 }
 
 export function SavingsGoalProgress({
@@ -19,7 +21,8 @@ export function SavingsGoalProgress({
     savingsTarget,
     currencyCode,
     currencySymbol = "₹",
-    isLoading = false
+    isLoading = false,
+    className
 }: SavingsGoalProgressProps) {
     // Logic Update: Saved = Income - Expenses
     const currentSavings = Math.max(0, income - totalSpent);
@@ -43,7 +46,7 @@ export function SavingsGoalProgress({
     const COLORS = ["hsl(var(--primary))", "hsl(var(--muted)/0.2)"];
 
     return (
-        <Card className="shadow-card overflow-hidden border-none bg-gradient-to-br from-card via-card to-primary/5 hover:to-primary/10 hover:shadow-lg transition-all duration-300 relative group">
+        <Card className={cn("shadow-card overflow-hidden border-none bg-gradient-to-br from-card via-card to-primary/5 hover:to-primary/10 hover:shadow-lg transition-all duration-300 relative group", className)}>
             <div className="absolute inset-0 bg-gradient-to-br from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-semibold flex items-center justify-between">

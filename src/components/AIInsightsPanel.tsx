@@ -123,7 +123,7 @@ export function AIInsightsPanel({ budgets = [], transactions = [], income = 0, s
     }
 
     setInsights(generatedInsights.slice(0, 4));
-  }, [budgets, transactions, income]);
+  }, [budgets, transactions, income, currencySymbol, savingsTarget]);
 
   return (
     <Card className="bg-gradient-to-br from-card to-primary/5 border-primary/20">

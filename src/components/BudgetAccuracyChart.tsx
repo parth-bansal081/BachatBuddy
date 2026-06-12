@@ -9,9 +9,10 @@ interface BudgetAccuracyChartProps {
     totalBudget: number;
     totalSpent: number;
     budgets: any[];
+    className?: string;
 }
 
-export function BudgetAccuracyChart({ totalBudget, totalSpent, budgets }: BudgetAccuracyChartProps) {
+export function BudgetAccuracyChart({ totalBudget, totalSpent, budgets, className }: BudgetAccuracyChartProps) {
     const [tip, setTip] = useState<string>("");
     const [loadingTip, setLoadingTip] = useState(false);
 
@@ -24,12 +25,12 @@ export function BudgetAccuracyChart({ totalBudget, totalSpent, budgets }: Budget
     ];
 
     const COLORS = [
-        percentage > 100 ? "#ef4444" : percentage > 85 ? "#f59e0b" : "#10b981", // Red, Amber, Emerald
-        "#e2e8f0", // Slate 200 for background
+        percentage > 100 ? "hsl(var(--destructive))" : percentage > 85 ? "hsl(var(--warning))" : "hsl(var(--primary))",
+        "hsl(var(--muted)/0.2)",
     ];
 
     return (
-        <Card className="shadow-card h-full flex flex-col">
+        <Card className={`shadow-elevation-2 h-full flex flex-col ${className || ""}`}>
             <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-semibold">Budget Accuracy</CardTitle>
             </CardHeader>

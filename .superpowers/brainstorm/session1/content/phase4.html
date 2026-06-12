@@ -1,0 +1,84 @@
+<h2>Phase 4 &mdash; Polish, Performance &amp; Accessibility</h2>
+<p class="subtitle">Device-aware rendering + graceful fallbacks + optimization</p>
+
+<div class="section">
+  <h3>Cross-Cutting Improvements</h3>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px">
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:20px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">Device Detection &amp; LOD</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          <b>High-end</b> (desktop, dedicated GPU):<br>
+          Full particles, shadows, high-poly models, 60fps<br><br>
+          <b>Mid-range</b> (laptop, integrated GPU):<br>
+          Reduced particles, no shadows, simpler geometry<br><br>
+          <b>Low-end</b> (mobile, old hardware):<br>
+          CSS-only 3D effects, no WebGL, all 2D fallback<br><br>
+          Auto-detect via WebGL renderer info + FPS monitoring
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:20px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">Accessibility Layer</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          &bull; aria-label on all 3D interactive elements<br>
+          &bull; Keyboard: Tab between 3D panels, Enter to interact<br>
+          &bull; Arrow keys for orbit/pan navigation<br>
+          &bull; Screen reader: semantic HTML fallback alongside 3D<br>
+          &bull; prefers-reduced-motion: disable all non-essential animations<br>
+          &bull; WCAG AA contrast in all 3D lighting states
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:20px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">Performance Optimization</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          &bull; InstancedMesh for ParticleField (1 draw call)<br>
+          &bull; Frustum culling (built into R3F)<br>
+          &bull; dpr={[1, 2]} adaptive pixel ratio<br>
+          &bull; Lazy-load 3D components per page<br>
+          &bull; Dispose geometry/materials on unmount<br>
+          &bull; useFrame throttling (skip frames at low FPS)<br>
+          &bull; Asset preloading for critical 3D models
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:20px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">Loading &amp; Error States</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          &bull; Skeleton loaders while 3D assets load<br>
+          &bull; WebGL unavailable: clean 2D fallback for every page<br>
+          &bull; R3F Suspense boundaries with spinner<br>
+          &bull; ErrorBoundary per Canvas with retry button<br>
+          &bull; Progressive enhancement: show 2D instantly, fade 3D in<br>
+          &bull; Mobile: touch-optimized interaction zones
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Phase 4 Checklist</h3>
+  <div style="background:#0a1628; border-radius:12px; padding:24px; font-size:12px; color:#94a3b8; line-height:2.4">
+    <div><input type="checkbox" style="accent-color:#14b8a6"> WebGL detection hook (useWebGLSupport)</div>
+    <div><input type="checkbox" style="accent-color:#14b8a6"> Device tier classification (useDeviceTier) — high/mid/low</div>
+    <div><input type="checkbox" style="accent-color:#14b8a6"> FPS monitor with auto-quality-adjust</div>
+    <div><input type="checkbox" style="accent-color:#14b8a6"> InstancedMesh for ParticleField</div>
+    <div><input type="checkbox" style="accent-color:#14b8a6"> ARIA labels on all 3D interactive components</div>
+    <div><input type="checkbox" style="accent-color:#14b8a6"> prefers-reduced-motion integration</div>
+    <div><input type="checkbox" style="accent-color:#14b8a6"> 2D fallback views for every page</div>
+    <div><input type="checkbox" style="accent-color:#14b8a6"> Lazy-load boundaries (React.lazy + Suspense)</div>
+    <div><input type="checkbox" style="accent-color:#14b8a6"> CSS 3D transforms as low-tier fallback</div>
+    <div><input type="checkbox" style="accent-color:#14b8a6"> Mobile touch optimization</div>
+    <div><input type="checkbox" style="accent-color:#14b8a6"> Cross-browser testing (Chrome, Firefox, Safari)</div>
+    <div><input type="checkbox" style="accent-color:#14b8a6"> Final bundle size audit (code splitting)</div>
+  </div>
+</div>

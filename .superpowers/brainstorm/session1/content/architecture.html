@@ -1,0 +1,54 @@
+<h2>Hybrid 2D + 3D Architecture</h2>
+<p class="subtitle">Per-page R3F canvases with shared 3D component library</p>
+
+<div class="section">
+  <h3>Architecture Overview</h3>
+  <div style="background:#0a1628; border-radius:16px; padding:32px; font-family:monospace; font-size:13px; color:#e2e8f0; line-height:1.8">
+    <div style="text-align:center; color:#14b8a6; font-size:15px; margin-bottom:20px">App.jsx</div>
+    <div style="display:flex; justify-content:center; gap:12px; margin-bottom:24px">
+      <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:12px 16px; color:#94a3b8">Dashboard</div>
+      <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:12px 16px; color:#94a3b8">Transactions</div>
+      <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:12px 16px; color:#94a3b8">Budget</div>
+      <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:12px 16px; color:#94a3b8">Settings</div>
+    </div>
+    <div style="text-align:center; margin-bottom:16px; color:#64748b">&#x2193; each page has its own &#x2193;</div>
+    <div style="background:#1e293b; border:1px solid #14b8a6; border-radius:12px; padding:20px; max-width:480px; margin:0 auto">
+      <div style="color:#14b8a6; margin-bottom:12px; text-align:center">R3F &lt;Canvas&gt;</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+        <div style="background:#0f172a; border-radius:6px; padding:10px; font-size:11px; color:#a5f3fc">3D Bar Chart</div>
+        <div style="background:#0f172a; border-radius:6px; padding:10px; font-size:11px; color:#a5f3fc">Floating Particles</div>
+        <div style="background:#0f172a; border-radius:6px; padding:10px; font-size:11px; color:#a5f3fc">Goal Tower</div>
+        <div style="background:#0f172a; border-radius:6px; padding:10px; font-size:11px; color:#a5f3fc">Budget Orb</div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:16px; color:#64748b">all 3D components drawn from &#x2193;</div>
+    <div style="background:#0f172a; border:2px dashed #14b8a6; border-radius:12px; padding:20px; max-width:480px; margin:12px auto 0">
+      <div style="color:#14b8a6; margin-bottom:8px; text-align:center">src/components/three/</div>
+      <div style="font-size:12px; color:#94a3b8; text-align:center">ThreeBarChart &bull; TransactionFlow &bull; GoalTower<br>BudgetOrb &bull; ParticleField &bull; AIAvatar<br>ThreeScene &bull; useThreeTheme</div>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:20px">
+  <div class="mockup">
+    <div class="mockup-header">2D Layer (Unchanged)</div>
+    <div class="mockup-body" style="font-size:13px; line-height:2.2">
+      <div style="color:#94a3b8">&#x2705; shadcn/ui components</div>
+      <div style="color:#94a3b8">&#x2705; Tailwind + Framer Motion</div>
+      <div style="color:#94a3b8">&#x2705; react-router-dom routing</div>
+      <div style="color:#94a3b8">&#x2705; tanstack/react-query</div>
+      <div style="color:#94a3b8">&#x2705; Supabase client</div>
+      <div style="color:#94a3b8">&#x2705; Existing pages & forms</div>
+    </div>
+  </div>
+  <div class="mockup">
+    <div class="mockup-header">3D Layer (New)</div>
+    <div class="mockup-body" style="font-size:13px; line-height:2.2">
+      <div style="color:#14b8a6">&#x2795; @react-three/fiber</div>
+      <div style="color:#14b8a6">&#x2795; @react-three/drei</div>
+      <div style="color:#14b8a6">&#x2795; three (Three.js)</div>
+      <div style="color:#14b8a6">&#x2795; @react-spring/three</div>
+      <div style="color:#14b8a6">&#x2795; maath (math utils)</div>
+    </div>
+  </div>
+</div>

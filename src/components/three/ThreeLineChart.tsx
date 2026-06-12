@@ -32,15 +32,28 @@ export function ThreeLineChart({
   depthOffset = 1,
   position = [0, 0, 0],
 }: Props) {
-  const cleanSeries = useMemo(() => (series || []).filter(s => s !== undefined && s !== null && Array.isArray(s.dataPoints)), [series]);
+  const cleanSeries = useMemo(() => {
+    return (series || [])
+      .filter((s): s is LineSeries => s !== undefined && s !== null && typeof s === "object" && Array.isArray(s.dataPoints))
+      .map((s) => ({
+        name: s?.name || "Unknown",
+        dataPoints: (s?.dataPoints || [])
+          .filter((dp) => dp !== null && dp !== undefined && typeof dp === "object")
+          .map((dp) => ({
+            x: dp?.x || "Unknown",
+            y: Number(dp?.y) || 0,
+          })),
+        color: s?.color,
+      }));
+  }, [series]);
 
   const allXValues = useMemo(
-    () => Array.from(new Set(cleanSeries.flatMap((s) => s.dataPoints.filter(dp => dp !== null && dp !== undefined).map((dp) => dp.x)))),
+    () => Array.from(new Set(cleanSeries.flatMap((s) => s.dataPoints.map((dp) => dp.x)))),
     [cleanSeries]
   ).sort();
 
   const allYValues = useMemo(
-    () => cleanSeries.flatMap((s) => s.dataPoints.filter(dp => dp !== null && dp !== undefined).map((dp) => dp.y)),
+    () => cleanSeries.flatMap((s) => s.dataPoints.map((dp) => dp.y)),
     [cleanSeries]
   );
   const maxY = useMemo(() => Math.max(...allYValues, 1), [allYValues]);

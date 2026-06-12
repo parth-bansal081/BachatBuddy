@@ -1,11 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Wallet, TrendingDown, PiggyBank, Plus } from "lucide-react";
+import { Wallet, TrendingDown, PiggyBank, Plus, Download, ArrowRight } from "lucide-react";
 import { SummaryCard } from "@/components/SummaryCard";
 import { BudgetProgress } from "@/components/BudgetProgress";
 import { TransactionTable } from "@/components/TransactionTable";
-import { SpendingChart } from "@/components/SpendingChart";
-import { CategoryPieChart } from "@/components/CategoryPieChart";
+import { SpendingTrendsChart } from "@/components/SpendingTrendsChart";
 import { AIInsightsPanel } from "@/components/AIInsightsPanel";
 import { ProjectedSpendingChart } from "@/components/ProjectedSpendingChart";
 import { AIChatbot } from "@/components/AIChatbot";
@@ -26,7 +25,6 @@ import { SafeToSpendCard } from "@/components/SafeToSpendCard";
 import { RecentTransactionsList } from "@/components/RecentTransactionsList";
 import { BudgetVarianceChart } from "@/components/BudgetVarianceChart";
 import { EmptyDashboard } from "@/components/EmptyDashboard";
-import { Download, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   Dialog,
@@ -40,8 +38,11 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { GeminiSparkle } from "@/components/ui/GeminiSparkle";
 import { Card, CardContent } from "@/components/ui/card";
 import { MotionWrapper } from "@/components/MotionWrapper";
+import { useThreeTheme } from "@/hooks/useThreeTheme";
+
 
 const Dashboard = () => {
+  const { chartColors: CHART_COLORS } = useThreeTheme();
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<DateRange>("all");
@@ -49,12 +50,10 @@ const Dashboard = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // --- SETU DATA SYNC LOGIC ---
-  // Setu V2 redirects to /dashboard?success=true&id=<consentId>
   useEffect(() => {
     const triggerSync = async (consentId: string) => {
       sessionStorage.setItem('setu_sync_done', 'true');
-      window.history.replaceState({}, '', '/dashboard'); // clean URL
+      window.history.replaceState({}, '', '/dashboard');
       const toastId = toast.loading("Syncing your financial data...");
       try {
         const { error } = await supabase.functions.invoke('sync-bank-data', {
@@ -73,42 +72,18 @@ const Dashboard = () => {
     };
 
     const handleSetuCallback = async () => {
-      // Only sync when Setu sends us back with URL params — never use stale stored consentIds
       const params = new URLSearchParams(window.location.search);
       const urlConsentId = params.get('id') || params.get('consentId');
       const success = params.get('success');
 
       if (urlConsentId && success === 'true') {
-        // Fresh redirect from Setu — always process, ignore previous sync guard
         sessionStorage.removeItem('setu_sync_done');
         await triggerSync(urlConsentId);
       }
     };
-
     handleSetuCallback();
   }, [queryClient]);
 
-  // Force refresh on mount
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-    queryClient.invalidateQueries({ queryKey: ["category-budgets"] });
-  }, []);
-
-  // Real-time listener
-  useEffect(() => {
-    const channel = supabase.channel('schema-db-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_profiles' }, () => {
-        queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-        queryClient.invalidateQueries({ queryKey: ["category-budgets"] });
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [queryClient]);
-
-  // --- MOCK DATA SYNC LOGIC DISABLED ---
-  /* Mock logic completely removed to enforce real data integrity */
-
-  // handleDelete implementation
   const handleDelete = async (id: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -118,7 +93,7 @@ const Dashboard = () => {
         .from("transactions")
         .delete()
         .eq("id", id)
-        .eq("user_id", user.id); // Strict ownership check
+        .eq("user_id", user.id);
 
       if (error) throw error;
       toast.success("Transaction deleted successfully");
@@ -128,24 +103,21 @@ const Dashboard = () => {
     }
   };
 
-  // Fetch User Profile — real data only
   const { data: profile, isLoading: isLoadingProfile } = useQuery<any>({
     queryKey: ["user-profile"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      if (!user) return { currency: "₹", monthly_income: 0, monthly_savings_target: 0, full_name: "", has_onboarded: false };
       const { data, error } = await supabase
         .from("user_profiles")
-        .select("currency, monthly_income, monthly_savings_target")
+        .select("*")
         .eq("user_id", user.id)
         .single();
-      if (error) { console.error("Profile fetch error:", error); return null; }
-      return data;
+      if (error) return { currency: "₹", monthly_income: 0, monthly_savings_target: 0, full_name: "", has_onboarded: false };
+      return data || { currency: "₹", monthly_income: 0, monthly_savings_target: 0, full_name: "", has_onboarded: false };
     },
     staleTime: 0,
   });
-
-  if (profile) console.log("Current Goal Data:", profile);
 
   const currencySymbol = (profile as any)?.currency || "₹";
   const currencyMap: Record<string, string> = {
@@ -158,29 +130,28 @@ const Dashboard = () => {
   };
   const currencyCode = currencyMap[currencySymbol] || "INR";
 
-  // Fetch Monthly Income for the current month
-  // REFACTOR: Use profile data directly instead of monthly_budgets table
   const income = (profile as any)?.monthly_income || 0;
-  // DEBUG: Fallback to proper goal or 0.
   const savingsTarget = Number((profile as any)?.monthly_savings_target) || 0;
 
-  // Fetch Category Budgets — real data only
   const { data: categoryBudgets = [] } = useQuery({
     queryKey: ["category-budgets"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
-      // @ts-ignore — budget_expectations table exists but is not in generated types
       const { data, error } = await supabase
         .from("budget_expectations")
         .select("*")
         .eq("user_id", user.id);
-      if (error) { console.error("Budget Fetch Error:", error); return []; }
-      return data || [];
+      if (error) return [];
+      return (data || []).map((b: any) => ({
+        category: b.category,
+        expected_amount: Number(b.expected_amount || 0),
+        budget: Number(b.expected_amount || 0),
+      }));
     },
+    staleTime: 0,
   });
 
-  // Fetch Transactions — real data only, never fall back to mock
   const { data: allTransactions = [], isLoading: isLoadingTransactions, error: transactionsError } = useQuery({
     queryKey: ["transactions"],
     queryFn: async () => {
@@ -190,31 +161,35 @@ const Dashboard = () => {
         .from("transactions")
         .select("*")
         .eq("user_id", user.id)
-        .order('date', { ascending: false });
-      if (error) { console.error("Error fetching transactions:", error); return [] as Transaction[]; }
-      return (data || []) as unknown as Transaction[];
+        .order("date", { ascending: false });
+      if (error) return [];
+      return (data || []).map((t: any) => ({
+        id: t.id,
+        date: t.date,
+        merchant: t.merchant,
+        category: t.category as Category,
+        amount: Number(t.amount),
+        type: Number(t.amount) >= 0 ? "income" : "expense",
+        account_id: t.account_id,
+      })) as Transaction[];
     },
-    staleTime: 1000 * 60,
-    gcTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: true
+    staleTime: 0,
   });
 
-  // Fetch Recurring Bills
   const { data: bills = [], isLoading: isLoadingBills } = useQuery({
     queryKey: ["recurring_bills"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
-
-      // @ts-ignore
       const { data, error } = await supabase
         .from("recurring_bills")
         .select("*")
-        .eq("user_id", user.id); // Strict Isolation
-
-      if (error) throw error;
+        .eq("user_id", user.id)
+        .order("billing_day", { ascending: true });
+      if (error) return [];
       return data || [];
     },
+    staleTime: 0,
   });
 
   const unpaidBillsTotal = useMemo(() => {
@@ -226,7 +201,6 @@ const Dashboard = () => {
       .reduce((sum, b: any) => sum + Number(b?.amount || 0), 0);
   }, [bills]);
 
-  // Filter criteria logic
   const filteredTransactions = useMemo(() => {
     let filtered = allTransactions;
     if (selectedAccountId) filtered = filtered.filter(t => t.account_id === selectedAccountId);
@@ -241,24 +215,17 @@ const Dashboard = () => {
     return filtered;
   }, [allTransactions, selectedAccountId, dateRange]);
 
-  // Calculate financials from filtered transactions
-  // Expenses should be displayed as positive numbers
   const totalExpenses = (filteredTransactions || [])
     .filter(t => t.type === 'expense' || !t.type)
     .reduce((sum, t) => sum + Math.abs(t?.amount || 0), 0);
 
-  // Spending Budget = Income - Savings Target
   const spendingBudget = Math.max(0, income - savingsTarget);
-
-  // Balance = Income - Total Expenses
   const remainingBalance = income - totalExpenses;
 
   const categorySpent = useMemo(() => {
     if (!filteredTransactions) return {};
     return filteredTransactions.reduce((acc, t) => {
       let category = t?.category || "Others";
-      
-      // Smart Recategorization for Demo Impact
       const remark = (t.merchant || "").toLowerCase();
       if (category === "Lifestyle" || category === "Others") {
         if (remark.includes("ft/cr") || remark.includes("salary")) category = "Income";
@@ -269,33 +236,24 @@ const Dashboard = () => {
         else if (remark.includes("bill") || remark.includes("recharge")) category = "Bills";
         else if (remark.includes("rent")) category = "Rent";
       }
-
       acc[category] = (acc[category] || 0) + Math.abs(t?.amount || 0);
       return acc;
     }, {} as Record<string, number>);
   }, [filteredTransactions]);
 
-  // Spending Trend Data (Date-based)
   const spendingTrendData = useMemo(() => {
     const dailyData: Record<string, number> = {};
     const sorted = [...(filteredTransactions || [])].sort((a, b) => 
       new Date(a.date).getTime() - new Date(b.date).getTime()
     );
-
     sorted.forEach(t => {
       const date = format(parseISO(t.date), "MMM dd");
       if (t.type === 'expense' || !t.type) {
         dailyData[date] = (dailyData[date] || 0) + Math.abs(t.amount);
       }
     });
-
     return Object.entries(dailyData).map(([date, amount]) => ({ date, amount }));
   }, [filteredTransactions]);
-
-  // Merge Spending with Budgets (Source of Truth: category_budgets)
-  // We want to show:
-  // 1. Categories with a set budget
-  // 2. Categories with spending but NO budget (so we can show "Budget not set")
 
   const allCategoryKeys = Array.from(new Set([
     ...(categoryBudgets || []).map((b: any) => b.category),
@@ -304,52 +262,36 @@ const Dashboard = () => {
 
   const currentBudgets: BudgetGoal[] = (allCategoryKeys || []).map(cat => {
     const budgetObj = categoryBudgets.find((b: any) => b.category === cat);
-
-    // Default Fallback: If no budget set, use Proportional Limit (Income / 5) to ensure graph data
     let limit = budgetObj ? (Number((budgetObj as any).expected_amount || 0) || Number((budgetObj as any).budget || 0)) : 0;
     if (!budgetObj && income > 0) {
       limit = Math.round(income / 5);
     }
-    // No more manual fallback to 10000 or similar
-    if (limit === 0 && income === 0) limit = 1; // Prevent division by zero validation issues but don't show fake money
-
+    if (limit === 0 && income === 0) limit = 1;
     return {
       category: cat as Category,
       budget: limit,
       spent: categorySpent[cat] || 0,
     };
-  }).filter(item => item.budget > 0 || item.spent > 0) // Hide empty/zero-zero items
-    .sort((a, b) => b.spent - a.spent); // Sort by highest spending for visibility
+  }).filter(item => item.budget > 0 || item.spent > 0)
+    .sort((a, b) => b.spent - a.spent);
 
   const handleBudgetChange = async (category: string, newBudget: number) => {
     console.log("Budget update logic here");
   };
 
-  const isLoading = isLoadingTransactions || isLoadingBills;
+  const isLoading = isLoadingTransactions || isLoadingBills || isLoadingProfile;
 
-  // navigate reference cleared
-
-
-
-
-  // Prepare Variance / Spending Data (Merging Actuals vs Budget)
   const spendingData = useMemo(() => {
-    // Reuse specific category keys from currentBudgets if consistent, or re-map
-    // Better: ensure consistency.
     const allCategories = Array.from(new Set([
       ...Object.keys(categorySpent || {}),
       ...(categoryBudgets || []).map((b: any) => b.category)
     ]));
-
     return (allCategories || []).map(cat => {
       const budgetObj = categoryBudgets.find((b: any) => b.category === cat);
-      // Fallback Logic: DB Value -> 0 -> Income/5 if income exists.
       let limit = Number((budgetObj as any)?.expected_amount || 0) || Number((budgetObj as any)?.budget || 0) || 0;
-
       if (limit === 0 && income > 0) {
         limit = Math.round(income / 5);
       }
-
       return {
         category: cat,
         actual: categorySpent[cat] || 0,
@@ -358,23 +300,21 @@ const Dashboard = () => {
     }).filter(d => d.actual > 0 || d.budget > 0);
   }, [categorySpent, categoryBudgets, income]);
 
-  // Use same data for variance chart
   const varianceData = useMemo(() => {
     return (spendingData || []).map(d => ({
       category: d.category,
       actual: d.actual,
-      expected: d.budget // Rename for compatibility with BudgetVarianceChart if needed
+      expected: d.budget
     }));
   }, [spendingData]);
 
-  // Handle Export
   const handleExport = () => {
     const headers = ["Date", "Merchant", "Category", "Amount", "Type"];
     const csvContent = [
       headers.join(","),
       ...(filteredTransactions || []).map(t => [
         t.date,
-        `"${t.merchant}"`, // Quote merchant to handle commas
+        `"${t.merchant}"`, 
         t.category,
         t.amount,
         "Expense"
@@ -394,36 +334,34 @@ const Dashboard = () => {
 
   if (isLoading || isLoadingProfile) {
     return (
-      <div className="flex items-center justify-center min-h-[500px]">
+      <div className="flex items-center justify-center min-h-[500px] bg-background">
         <div className="animate-pulse flex flex-col items-center gap-4">
-          <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
-            <TrendingDown className="h-6 w-6 text-primary animate-spin" />
+          <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center">
+            <TrendingDown className="h-8 w-8 text-primary animate-spin-slow" />
           </div>
-          <p className="text-muted-foreground font-medium">Syncing your Vault...</p>
+          <p className="text-muted-foreground font-semibold text-lg">Syncing your Vault...</p>
         </div>
       </div>
     );
   }
 
-  // Empty state — no real data yet, show bank link CTA
   if (!isLoading && !isLoadingProfile && allTransactions.length === 0) {
     return <EmptyDashboard />;
   }
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <MotionWrapper delay={0.1}>
+    <div className="space-y-6">
+      <MotionWrapper delay={0.05}>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold gemini-text-gradient">Dashboard</h1>
               <GeminiSparkle className="w-6 h-6" />
             </div>
-            <p className="text-muted-foreground mt-1">Track your financial health at a glance</p>
+            <p className="text-muted-foreground mt-1 text-sm">Track your financial health at a glance</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <Button variant="outline" size="sm" onClick={handleExport} className="gap-2 active:scale-95 transition-transform">
+            <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
               <Download className="h-4 w-4" />
               Export
             </Button>
@@ -437,7 +375,7 @@ const Dashboard = () => {
             />
             <Dialog open={isAddExpenseOpen} onOpenChange={setIsAddExpenseOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2 active:scale-95 transition-transform">
+                <Button className="gap-2">
                   <Plus className="h-4 w-4" />
                   Add Expense
                 </Button>
@@ -451,54 +389,52 @@ const Dashboard = () => {
         </div>
       </MotionWrapper>
 
-      {/* AI Insight Section */}
-      <MotionWrapper delay={0.2} className="relative">
+      <MotionWrapper delay={0.1}>
         <SmartInsightCard transactions={allTransactions} currencySymbol={currencySymbol} />
       </MotionWrapper>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {isLoading ? (
-          <Skeleton className="h-32 w-full rounded-xl bg-white/5" />
+          Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-32 w-full rounded-xl bg-card/50" />
+          ))
         ) : (
           <>
-            <MotionWrapper delay={0.3} className="h-full">
+            <MotionWrapper delay={0.15} className="flex flex-col h-full">
               {income === 0 ? (
-                <Card className="glass-card h-full border-primary/20 hover:border-primary/30 transition-all duration-200">
-                  <CardContent className="p-6 flex flex-col justify-center items-center h-full gap-2">
-                    <p className="text-muted-foreground font-medium text-sm">Profile Incomplete</p>
-                    <Button size="sm" onClick={() => navigate('/onboarding')}>
-                      Complete Profile
-                    </Button>
-                  </CardContent>
+                <Card className="card-glass h-full flex flex-col justify-center items-center p-6 gap-2">
+                  <p className="text-muted-foreground font-medium text-sm">Profile Incomplete</p>
+                  <Button size="sm" onClick={() => navigate('/onboarding')} className="shadow-elevation-1">
+                    Complete Profile
+                  </Button>
                 </Card>
               ) : (
                 <SummaryCard title="Monthly Income" value={income} icon={<Wallet />} variant="primary" currencyCode={currencyCode} className="h-full" />
               )}
             </MotionWrapper>
 
-            <MotionWrapper delay={0.35} className="h-full">
+            <MotionWrapper delay={0.2} className="flex flex-col h-full">
               <SummaryCard title="Total Expenses" value={totalExpenses} icon={<TrendingDown />} variant="warning" currencyCode={currencyCode} className="h-full" />
             </MotionWrapper>
 
-            <MotionWrapper delay={0.4} className="h-full">
+            <MotionWrapper delay={0.25} className="flex flex-col h-full">
               <SafeToSpendCard
                 income={income}
                 savingsTarget={savingsTarget}
                 totalSpent={totalExpenses}
                 currencyCode={currencyCode}
+                className="h-full"
               />
             </MotionWrapper>
 
-            <MotionWrapper delay={0.45} className="h-full">
-              <SavingsGoalProgress income={income} totalSpent={totalExpenses} savingsTarget={savingsTarget} currencyCode={currencyCode} currencySymbol={currencySymbol} />
+            <MotionWrapper delay={0.3} className="flex flex-col h-full">
+              <SavingsGoalProgress income={income} totalSpent={totalExpenses} savingsTarget={savingsTarget} currencyCode={currencyCode} currencySymbol={currencySymbol} className="h-full" />
             </MotionWrapper>
           </>
         )}
       </div>
 
-      {/* Powered AI Insights Panel */}
-      <MotionWrapper delay={0.46}>
+      <MotionWrapper delay={0.35}>
         <AIInsightsPanel
           budgets={currentBudgets}
           transactions={filteredTransactions}
@@ -509,49 +445,70 @@ const Dashboard = () => {
         />
       </MotionWrapper>
 
-      {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <MotionWrapper delay={0.5}>
-            <SpendingChart
+          <MotionWrapper delay={0.4}>
+            <SpendingTrendsChart
               data={spendingTrendData}
-              xAxisKey="date"
+              currencySymbol={currencySymbol}
+              className="shadow-elevation-2"
             />
           </MotionWrapper>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <MotionWrapper delay={0.6}>
-              <BudgetVarianceChart data={varianceData} currencyCode={currencyCode} />
+            <MotionWrapper delay={0.45}>
+              <BudgetVarianceChart data={varianceData} currencyCode={currencyCode} className="card-glass rounded-xl shadow-elevation-2" />
             </MotionWrapper>
 
-            <MotionWrapper delay={0.65}>
-              <ProjectedSpendingChart budgets={currentBudgets} income={spendingBudget} currencySymbol={currencySymbol} />
+            <MotionWrapper delay={0.5}>
+              <ProjectedSpendingChart budgets={currentBudgets} income={spendingBudget} currencySymbol={currencySymbol} className="card-glass rounded-xl shadow-elevation-2" />
             </MotionWrapper>
           </div>
         </div>
         <div className="space-y-6">
+          <MotionWrapper delay={0.45}>
+            <Card className="card-glass rounded-xl shadow-elevation-2">
+              <CardContent className="p-5">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-foreground">Recent Transactions</h3>
+                  <Button variant="ghost" size="sm" onClick={() => navigate("/transactions")} className="gap-1 text-muted-foreground hover:text-primary">
+                    View All <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </div>
+                <RecentTransactionsList transactions={filteredTransactions} currencyCode={currencyCode} />
+              </CardContent>
+            </Card>
+          </MotionWrapper>
+
+          <MotionWrapper delay={0.55}>
+            <RecurringBills currencyCode={currencyCode} className="card-glass rounded-xl shadow-elevation-2" />
+          </MotionWrapper>
+
           <MotionWrapper delay={0.6}>
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Recent Transactions</h3>
-              <Button variant="ghost" size="sm" onClick={() => navigate("/transactions")} className="gap-1 text-muted-foreground hover:text-primary">
-                View All <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
-            <RecentTransactionsList transactions={filteredTransactions} currencyCode={currencyCode} />
-          </MotionWrapper>
-
-          <MotionWrapper delay={0.7}>
-            <RecurringBills currencyCode={currencyCode} />
-          </MotionWrapper>
-
-          <MotionWrapper delay={0.75}>
-            <BudgetProgress budgets={currentBudgets} onBudgetChange={handleBudgetChange} currencyCode={currencyCode} />
+            <BudgetProgress budgets={currentBudgets} onBudgetChange={handleBudgetChange} currencyCode={currencyCode} className="card-glass rounded-xl shadow-elevation-2" />
           </MotionWrapper>
         </div>
       </div>
 
+      {/* Budget Insights/Diagnostics Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <MotionWrapper delay={0.65}>
+          <BudgetAccuracyChart
+            totalBudget={spendingBudget}
+            totalSpent={totalExpenses}
+            budgets={currentBudgets}
+          />
+        </MotionWrapper>
+        <MotionWrapper delay={0.7}>
+          <BudgetBurnRate
+            totalBudget={spendingBudget}
+            totalSpent={totalExpenses}
+          />
+        </MotionWrapper>
+      </div>
+
       {/* Table Section */}
-      <MotionWrapper delay={0.8}>
+      <MotionWrapper delay={0.75}>
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold gemini-text-gradient">All Transactions</h3>
           <Button variant="link" onClick={() => navigate("/transactions")}>View Full History</Button>
@@ -559,7 +516,6 @@ const Dashboard = () => {
         <TransactionTable transactions={filteredTransactions} onDelete={handleDelete} onEdit={setEditingTransaction} currencyCode={currencyCode} />
       </MotionWrapper>
 
-      {/* Chatbot */}
       {!isLoading && (
         <AIChatbot
           budgets={currentBudgets}

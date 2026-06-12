@@ -87,9 +87,18 @@ function Segment({
 }
 
 export function ThreeRingChart({ segments, radius = 3 }: Props) {
-  const cleanSegments = useMemo(() => (segments || []).filter((s) => s !== undefined && s !== null), [segments]);
+  const cleanSegments = useMemo(() => {
+    return (segments || [])
+      .filter((s): s is RingSegment => s !== undefined && s !== null && typeof s === "object")
+      .map((s) => ({
+        label: s?.label || "Unknown",
+        value: Number(s?.value) || 0,
+        color: s?.color,
+      }));
+  }, [segments]);
+
   const totalValue = useMemo(
-    () => cleanSegments.reduce((s, seg) => s + seg.value, 0) || 1,
+    () => cleanSegments.reduce((s, seg) => s + (seg?.value || 0), 0) || 1,
     [cleanSegments]
   );
 

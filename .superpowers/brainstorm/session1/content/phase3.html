@@ -1,0 +1,111 @@
+<h2>Phase 3 &mdash; AI &amp; Atmosphere</h2>
+<p class="subtitle">3D AI Assistant + Immersive Environment Effects</p>
+
+<div class="section">
+  <h3>New Components</h3>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px">
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:24px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">AIAvatar</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          Friendly 3D avatar for financial assistant<br>
+          &bull; Simple geometric character (sphere head + body)<br>
+          &bull; Floating idle animation (gentle bob + rotation)<br>
+          &bull; Mouth/speech indicator when AI is "thinking"<br>
+          &bull; Points/looks toward relevant UI elements<br>
+          &bull; Appear/disappear with scale + fade transition<br>
+          &bull; Accessible: all tips also rendered as text
+        </div>
+        <div style="margin-top:12px; background:#1e293b; border-radius:6px; padding:8px 12px; font-size:11px; font-family:monospace; color:#a5f3fc">
+          &lt;AIAvatar<br>
+          &nbsp;&nbsp;state="speaking"<br>
+          &nbsp;&nbsp;tip={aiTip}<br>
+          &nbsp;&nbsp;position={[2, 0, 0]}<br>
+          /&gt;
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:24px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">DynamicLighting</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          Ambient lighting that responds to context<br>
+          &bull; Warm morning tones, cool evening tones<br>
+          &bull; Intensity pulses on data updates<br>
+          &bull; Spotlight follows cursor position<br>
+          &bull; Red-shift when over budget, green when saving<br>
+          &bull; Shared via useThreeTheme hook
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:24px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">ParallaxBackground</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          Depth-aware background planes<br>
+          &bull; Multiple layers at different Z-depths<br>
+          &bull; Each layer shifts at different rate on scroll<br>
+          &bull; Subtle gradient meshes with Bachat green<br>
+          &bull; Optional: low-poly city silhouette shapes<br>
+          &bull; Performance: static planes, no physics
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0">
+      <div style="background:#0a1628; padding:24px; border-radius:10px">
+        <div style="font-size:13px; color:#14b8a6; font-weight:600; margin-bottom:8px">CursorRipple</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.6">
+          Interactive ground plane with ripple effect<br>
+          &bull; Flat plane below all 3D content<br>
+          &bull; Vertex displacement shader on cursor hover<br>
+          &bull; Ripples fade over time (decay)<br>
+          &bull; Color: subtle Bachat-green tint<br>
+          &bull; Opt-out via prefers-reduced-motion
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>AI Panel Enhancement</h3>
+  <div style="background:#0a1628; border-radius:12px; padding:24px; border:1px solid #14b8a6">
+    <div style="display:flex; gap:24px">
+      <div style="flex:1; background:#1e293b; border-radius:8px; padding:16px; text-align:center">
+        <div style="color:#64748b; font-size:11px; margin-bottom:8px">CURRENT</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.8">
+          AIChatbot (text panel)<br>
+          AISmartTip (card)<br>
+          AIInsightsPanel (cards)
+        </div>
+      </div>
+      <div style="color:#14b8a6; font-size:24px; display:flex; align-items:center">&#x2192;</div>
+      <div style="flex:1; background:#0f172a; border-radius:8px; padding:16px; text-align:center">
+        <div style="color:#14b8a6; font-size:11px; margin-bottom:8px">PHASE 3</div>
+        <div style="font-size:11px; color:#5eead4; line-height:1.8">
+          AIAvatar + AIChatbot (paired)<br>
+          AISmartTip animates via avatar<br>
+          AIInsightsPanel + ParallaxBackground<br>
+          CursorRipple on all pages
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Files</h3>
+  <div style="font-size:12px; color:#94a3b8; line-height:2.2">
+    <div><span style="color:#14b8a6">New:</span> src/components/three/AIAvatar.tsx</div>
+    <div><span style="color:#14b8a6">New:</span> src/components/three/ParallaxBackground.tsx</div>
+    <div><span style="color:#14b8a6">New:</span> src/components/three/CursorRipple.tsx</div>
+    <div><span style="color:#fbbf24">Modify:</span> src/hooks/useThreeTheme.ts (add dynamic lighting)</div>
+    <div><span style="color:#fbbf24">Modify:</span> src/components/three/ThreeScene.tsx (integrate new ambient)</div>
+    <div><span style="color:#fbbf24">Modify:</span> src/components/AIInsightsPanel.tsx</div>
+    <div><span style="color:#fbbf24">Modify:</span> src/components/AISmartTip.tsx</div>
+  </div>
+</div>

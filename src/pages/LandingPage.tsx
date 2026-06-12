@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import {
     Wallet,
@@ -18,6 +18,7 @@ import {
     Shield,
     TrendingUp
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 const LandingPage = () => {
     const [showAuthModal, setShowAuthModal] = useState(false);
@@ -28,7 +29,6 @@ const LandingPage = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
 
-    // Smooth scroll function
     const scrollToSection = (sectionId: string) => {
         const element = document.getElementById(sectionId);
         if (element) {
@@ -37,7 +37,6 @@ const LandingPage = () => {
         }
     };
 
-    // Handle authentication
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -52,10 +51,7 @@ const LandingPage = () => {
                     }
                 });
                 if (error) throw error;
-                toast({
-                    title: "Check your email",
-                    description: "We've sent you a confirmation link.",
-                });
+                toast.success("Check your email for a confirmation link.");
                 setShowAuthModal(false);
             } else {
                 const { error } = await supabase.auth.signInWithPassword({
@@ -63,19 +59,12 @@ const LandingPage = () => {
                     password,
                 });
                 if (error) throw error;
-                toast({
-                    title: "Welcome back!",
-                    description: "Successfully logged in.",
-                });
+                toast.success("Welcome back! Successfully logged in.");
                 setShowAuthModal(false);
                 navigate("/");
             }
         } catch (error: any) {
-            toast({
-                title: "Error",
-                description: error.message,
-                variant: "destructive",
-            });
+            toast.error(error.message);
         } finally {
             setLoading(false);
         }
@@ -88,47 +77,54 @@ const LandingPage = () => {
         setPassword("");
     };
 
+    const fadeInVariants = {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+        exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: "easeIn" } },
+    };
+
+    const staggerContainerVariants = {
+        animate: { transition: { staggerChildren: 0.1 } },
+    };
+
     return (
-        <div className="min-h-screen bg-background text-foreground">
+        <div className="min-h-screen bg-background text-foreground font-sans">
             {/* Navigation Bar */}
-            <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.nav
+                initial="initial"
+                animate="animate"
+                variants={fadeInVariants}
+                className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-elevation-1"
+            >
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1400px]">
                     <div className="flex items-center justify-between h-16">
-                        {/* Logo */}
                         <div className="flex items-center gap-2">
                             <div className="p-2 rounded-xl bg-primary/10 text-primary">
                                 <img src="/BachatBuddy.png" alt="Logo" className="h-6 w-6 object-contain" />
                             </div>
-                            <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                            <span className="text-xl font-bold gemini-text-gradient">
                                 BachatBuddy
                             </span>
                         </div>
 
                         {/* Desktop Navigation */}
-                        <div className="hidden md:flex items-center gap-8">
-                            <button
-                                onClick={() => scrollToSection("features")}
-                                className="text-muted-foreground hover:text-foreground transition-colors"
-                            >
+                        <div className="hidden md:flex items-center gap-6">
+                            <Button variant="ghost" onClick={() => scrollToSection("features")} className="text-muted-foreground hover:text-foreground">
                                 Features
-                            </button>
-                            <button
-                                onClick={() => scrollToSection("developers")}
-                                className="text-muted-foreground hover:text-foreground transition-colors"
-                            >
+                            </Button>
+                            <Button variant="ghost" onClick={() => scrollToSection("developers")} className="text-muted-foreground hover:text-foreground">
                                 About Developers
-                            </button>
+                            </Button>
                             <div className="flex items-center gap-3">
                                 <Button
-                                    variant="ghost"
+                                    variant="outline"
                                     onClick={() => openAuthModal(false)}
-                                    className="hover:bg-primary/10"
                                 >
                                     Login
                                 </Button>
                                 <Button
                                     onClick={() => openAuthModal(true)}
-                                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                                    className="shadow-elevation-2"
                                 >
                                     Sign Up
                                 </Button>
@@ -137,7 +133,7 @@ const LandingPage = () => {
 
                         {/* Mobile Menu Button */}
                         <button
-                            className="md:hidden p-2 text-foreground"
+                            className="md:hidden p-2 text-foreground/80 hover:text-foreground"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         >
                             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -146,19 +142,19 @@ const LandingPage = () => {
 
                     {/* Mobile Menu */}
                     {mobileMenuOpen && (
-                        <div className="md:hidden py-4 space-y-3 animate-slide-up">
-                            <button
-                                onClick={() => scrollToSection("features")}
-                                className="block w-full text-left px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-lg transition-colors"
-                            >
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
+                            className="md:hidden py-4 space-y-3 border-t border-border/50"
+                        >
+                            <Button variant="ghost" onClick={() => scrollToSection("features")} className="w-full justify-start text-muted-foreground hover:text-foreground">
                                 Features
-                            </button>
-                            <button
-                                onClick={() => scrollToSection("developers")}
-                                className="block w-full text-left px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-lg transition-colors"
-                            >
+                            </Button>
+                            <Button variant="ghost" onClick={() => scrollToSection("developers")} className="w-full justify-start text-muted-foreground hover:text-foreground">
                                 About Developers
-                            </button>
+                            </Button>
                             <div className="px-4 pt-2 space-y-2">
                                 <Button
                                     variant="outline"
@@ -169,47 +165,74 @@ const LandingPage = () => {
                                 </Button>
                                 <Button
                                     onClick={() => openAuthModal(true)}
-                                    className="w-full bg-primary hover:bg-primary/90"
+                                    className="w-full shadow-elevation-2"
                                 >
                                     Sign Up
                                 </Button>
                             </div>
-                        </div>
+                        </motion.div>
                     )}
                 </div>
-            </nav>
+            </motion.nav>
 
             {/* Hero Section */}
-            <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-                {/* Gradient Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
-                <div className="absolute top-20 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+            <section className="relative pt-32 pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+                <div className="absolute inset-0 opacity-20 dark:opacity-10">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 to-transparent" />
+                    <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-primary/5 rounded-full mix-blend-multiply blur-3xl animate-blob-one" />
+                    <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/5 rounded-full mix-blend-multiply blur-3xl animate-blob-two animation-delay-2000" />
+                    <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-secondary/5 rounded-full mix-blend-multiply blur-3xl animate-blob-three animation-delay-4000" />
+                </div>
+                <style jsx>{`
+                    @keyframes blob-one {
+                        0% { transform: translate(0, 0) scale(1); }
+                        33% { transform: translate(30px, -50px) scale(1.1); }
+                        66% { transform: translate(-20px, 20px) scale(0.9); }
+                        100% { transform: translate(0, 0) scale(1); }
+                    }
+                    @keyframes blob-two {
+                        0% { transform: translate(0, 0) scale(1); }
+                        33% { transform: translate(-40px, 30px) scale(0.95); }
+                        66% { transform: translate(10px, -10px) scale(1.05); }
+                        100% { transform: translate(0, 0) scale(1); }
+                    }
+                    @keyframes blob-three {
+                        0% { transform: translate(0, 0) scale(1); }
+                        33% { transform: translate(20px, 40px) scale(1.03); }
+                        66% { transform: translate(-30px, -30px) scale(0.98); }
+                        100% { transform: translate(0, 0) scale(1); }
+                    }
+                    .animation-delay-2000 { animation-delay: 2s; }
+                    .animation-delay-4000 { animation-delay: 4s; }
+                `}</style>
 
-                <div className="container mx-auto relative z-10">
-                    <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20">
+                <div className="container mx-auto relative z-10 max-w-[1000px]">
+                    <motion.div
+                        initial="initial"
+                        animate="animate"
+                        variants={staggerContainerVariants}
+                        className="max-w-4xl mx-auto text-center space-y-8"
+                    >
+                        <motion.div variants={fadeInVariants} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 shadow-elevation-1">
                             <Sparkles className="h-4 w-4" />
                             <span className="text-sm font-medium">AI-Powered Financial Management</span>
-                        </div>
+                        </motion.div>
 
-                        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight">
+                        <motion.h1 variants={fadeInVariants} className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-balance gemini-text-gradient">
                             Welcome to{" "}
-                            <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-                                BachatBuddy
-                            </span>
-                        </h1>
+                            BachatBuddy
+                        </motion.h1>
 
-                        <p className="text-xl sm:text-2xl text-muted-foreground max-w-2xl mx-auto">
+                        <motion.p variants={fadeInVariants} className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
                             Take control of your finances with intelligent insights, automated tracking,
                             and professional-grade tools designed for modern money management.
-                        </p>
+                        </motion.p>
 
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                        <motion.div variants={fadeInVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                             <Button
                                 size="lg"
                                 onClick={() => openAuthModal(true)}
-                                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg group"
+                                className="shadow-elevation-3 hover:shadow-glow-lg"
                             >
                                 Get Started Free
                                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -218,50 +241,60 @@ const LandingPage = () => {
                                 size="lg"
                                 variant="outline"
                                 onClick={() => scrollToSection("features")}
-                                className="px-8 py-6 text-lg border-primary/20 hover:bg-primary/5"
+                                className="border-primary/20 hover:bg-primary/5 shadow-elevation-1"
                             >
                                 Learn More
                             </Button>
-                        </div>
+                        </motion.div>
 
-                        {/* Stats */}
-                        <div className="grid grid-cols-3 gap-8 pt-12 max-w-2xl mx-auto">
-                            <div className="space-y-1">
+                        <motion.div variants={staggerContainerVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-12 max-w-2xl mx-auto">
+                            <motion.div variants={fadeInVariants} className="space-y-1">
                                 <div className="text-3xl font-bold text-primary">AI-Powered</div>
                                 <div className="text-sm text-muted-foreground">Smart Insights</div>
-                            </div>
-                            <div className="space-y-1">
+                            </motion.div>
+                            <motion.div variants={fadeInVariants} className="space-y-1">
                                 <div className="text-3xl font-bold text-primary">Secure</div>
                                 <div className="text-sm text-muted-foreground">Bank-Grade</div>
-                            </div>
-                            <div className="space-y-1">
+                            </motion.div>
+                            <motion.div variants={fadeInVariants} className="space-y-1">
                                 <div className="text-3xl font-bold text-primary">24/7</div>
                                 <div className="text-sm text-muted-foreground">Monitoring</div>
-                            </div>
-                        </div>
-                    </div>
+                            </motion.div>
+                        </motion.div>
+                    </motion.div>
                 </div>
             </section>
 
             {/* Features Section */}
-            <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-                <div className="container mx-auto">
-                    <div className="text-center space-y-4 mb-16 animate-slide-up">
-                        <h2 className="text-4xl sm:text-5xl font-bold">
+            <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/20">
+                <div className="container mx-auto max-w-[1000px]">
+                    <motion.div
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={fadeInVariants}
+                        className="text-center space-y-4 mb-16"
+                    >
+                        <h2 className="text-4xl sm:text-5xl font-extrabold">
                             Powerful Features for{" "}
-                            <span className="text-primary">Smart Finance</span>
+                            <span className="gemini-text-gradient">Smart Finance</span>
                         </h2>
                         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                             Everything you need to manage your money intelligently
                         </p>
-                    </div>
+                    </motion.div>
 
-                    <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <motion.div
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={staggerContainerVariants}
+                        className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"
+                    >
                         {/* Feature 1: AI Financial Coach */}
-                        <div className="group relative p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1">
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <motion.div variants={fadeInVariants} className="group relative p-8 rounded-2xl card-glass shadow-elevation-2 hover:shadow-elevation-4 hover:-translate-y-1">
                             <div className="relative space-y-4">
-                                <div className="p-3 rounded-xl bg-primary/10 text-primary w-fit">
+                                <div className="p-3 rounded-xl bg-primary/10 text-primary w-fit shadow-elevation-1">
                                     <Brain className="h-8 w-8" />
                                 </div>
                                 <h3 className="text-2xl font-bold">AI Financial Coach</h3>
@@ -271,16 +304,15 @@ const LandingPage = () => {
                                 </p>
                                 <div className="flex items-center gap-2 text-primary font-medium pt-2">
                                     <span>Learn more</span>
-                                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Feature 2: Automated Bill Reminders */}
-                        <div className="group relative p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1">
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <motion.div variants={fadeInVariants} className="group relative p-8 rounded-2xl card-glass shadow-elevation-2 hover:shadow-elevation-4 hover:-translate-y-1">
                             <div className="relative space-y-4">
-                                <div className="p-3 rounded-xl bg-primary/10 text-primary w-fit">
+                                <div className="p-3 rounded-xl bg-primary/10 text-primary w-fit shadow-elevation-1">
                                     <Bell className="h-8 w-8" />
                                 </div>
                                 <h3 className="text-2xl font-bold">Automated Bill Reminders</h3>
@@ -290,16 +322,15 @@ const LandingPage = () => {
                                 </p>
                                 <div className="flex items-center gap-2 text-primary font-medium pt-2">
                                     <span>Learn more</span>
-                                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Feature 3: Bank Sync */}
-                        <div className="group relative p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1">
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <motion.div variants={fadeInVariants} className="group relative p-8 rounded-2xl card-glass shadow-elevation-2 hover:shadow-elevation-4 hover:-translate-y-1">
                             <div className="relative space-y-4">
-                                <div className="p-3 rounded-xl bg-primary/10 text-primary w-fit">
+                                <div className="p-3 rounded-xl bg-primary/10 text-primary w-fit shadow-elevation-1">
                                     <Building2 className="h-8 w-8" />
                                 </div>
                                 <h3 className="text-2xl font-bold">Professional Bank Sync</h3>
@@ -309,56 +340,74 @@ const LandingPage = () => {
                                 </p>
                                 <div className="flex items-center gap-2 text-primary font-medium pt-2">
                                     <span>Learn more</span>
-                                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
 
                     {/* Additional Features */}
-                    <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mt-8">
-                        <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border/50">
+                    <motion.div
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={staggerContainerVariants}
+                        className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mt-8"
+                    >
+                        <motion.div variants={fadeInVariants} className="flex items-start gap-3 p-4 rounded-xl card-glass shadow-elevation-1">
                             <Shield className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                             <div>
                                 <h4 className="font-semibold mb-1">Bank-Grade Security</h4>
                                 <p className="text-sm text-muted-foreground">Your data is encrypted and protected</p>
                             </div>
-                        </div>
-                        <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border/50">
+                        </motion.div>
+                        <motion.div variants={fadeInVariants} className="flex items-start gap-3 p-4 rounded-xl card-glass shadow-elevation-1">
                             <TrendingUp className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                             <div>
                                 <h4 className="font-semibold mb-1">Smart Analytics</h4>
                                 <p className="text-sm text-muted-foreground">Visualize spending patterns and trends</p>
                             </div>
-                        </div>
-                        <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border/50">
+                        </motion.div>
+                        <motion.div variants={fadeInVariants} className="flex items-start gap-3 p-4 rounded-xl card-glass shadow-elevation-1">
                             <Sparkles className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                             <div>
                                 <h4 className="font-semibold mb-1">Automated Insights</h4>
                                 <p className="text-sm text-muted-foreground">AI-powered financial recommendations</p>
                             </div>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
                 </div>
             </section>
 
             {/* Developers Section */}
             <section id="developers" className="py-20 px-4 sm:px-6 lg:px-8">
-                <div className="container mx-auto">
-                    <div className="text-center space-y-4 mb-16">
-                        <h2 className="text-4xl sm:text-5xl font-bold">
-                            Meet the <span className="text-primary">Creators</span>
+                <div className="container mx-auto max-w-[1000px]">
+                    <motion.div
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={fadeInVariants}
+                        className="text-center space-y-4 mb-16"
+                    >
+                        <h2 className="text-4xl sm:text-5xl font-extrabold">
+                            Meet the <span className="gemini-text-gradient">Creators</span>
                         </h2>
                         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                             Built by passionate developers dedicated to revolutionizing personal finance
                         </p>
-                    </div>
+                    </motion.div>
 
-                    <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <motion.div
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={staggerContainerVariants}
+                        className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
+                    >
                         {/* Developer 1 */}
-                        <div className="group p-6 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                        <motion.div variants={fadeInVariants} className="group p-6 rounded-2xl card-glass shadow-elevation-2 hover:shadow-elevation-4">
                             <div className="space-y-4">
-                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-2xl font-bold text-primary-foreground">
+                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-2xl font-bold text-primary-foreground shadow-elevation-1">
                                     PB
                                 </div>
                                 <div>
@@ -370,12 +419,12 @@ const LandingPage = () => {
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Developer 2 */}
-                        <div className="group p-6 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                        <motion.div variants={fadeInVariants} className="group p-6 rounded-2xl card-glass shadow-elevation-2 hover:shadow-elevation-4">
                             <div className="space-y-4">
-                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/80 to-primary/40 flex items-center justify-center text-2xl font-bold text-primary-foreground">
+                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/80 to-primary/40 flex items-center justify-center text-2xl font-bold text-primary-foreground shadow-elevation-1">
                                     ST
                                 </div>
                                 <div>
@@ -387,18 +436,24 @@ const LandingPage = () => {
                                     </p>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
                 </div>
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
-                <div className="container mx-auto">
-                    <div className="max-w-3xl mx-auto text-center space-y-8">
-                        <h2 className="text-4xl sm:text-5xl font-bold">
+            <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/10 via-primary/5 to-background border-t border-border/50">
+                <div className="container mx-auto max-w-[1000px]">
+                    <motion.div
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={fadeInVariants}
+                        className="max-w-3xl mx-auto text-center space-y-8"
+                    >
+                        <h2 className="text-4xl sm:text-5xl font-extrabold">
                             Ready to Transform Your{" "}
-                            <span className="text-primary">Financial Future?</span>
+                            <span className="gemini-text-gradient">Financial Future?</span>
                         </h2>
                         <p className="text-xl text-muted-foreground">
                             Join thousands of users who are already managing their money smarter with BachatBuddy
@@ -406,33 +461,39 @@ const LandingPage = () => {
                         <Button
                             size="lg"
                             onClick={() => openAuthModal(true)}
-                            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg group"
+                            className="shadow-elevation-3 hover:shadow-glow-lg"
                         >
                             Start Your Journey
                             <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                         </Button>
-                    </div>
+                    </motion.div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="py-8 px-4 sm:px-6 lg:px-8 border-t border-border">
-                <div className="container mx-auto">
+            <motion.footer
+                initial="initial"
+                whileInView="animate"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={fadeInVariants}
+                className="py-8 px-4 sm:px-6 lg:px-8 border-t border-border/50"
+            >
+                <div className="container mx-auto max-w-[1400px]">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-2">
                             <div className="p-2 rounded-xl bg-primary/10 text-primary">
                                 <img src="/BachatBuddy.png" alt="Logo" className="h-5 w-5 object-contain" />
                             </div>
-                            <span className="font-bold text-primary">BachatBuddy</span>
+                            <span className="font-bold gemini-text-gradient">BachatBuddy</span>
                         </div>
                         <p className="text-sm text-muted-foreground">
                             © 2025 BachatBuddy. All rights reserved.
                         </p>
                     </div>
                 </div>
-            </footer>
+            </motion.footer>
 
-            {/* Authentication Modal */}
+            {/* Authentication Modal - Uses new Dialog component */}
             <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
@@ -465,7 +526,7 @@ const LandingPage = () => {
                             />
                         </div>
                         <Button
-                            className="w-full bg-primary hover:bg-primary/90"
+                            className="w-full shadow-elevation-2"
                             type="submit"
                             disabled={loading}
                         >

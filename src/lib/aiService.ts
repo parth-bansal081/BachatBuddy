@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-const AI_API_URL = "https://bachatbuddy-ai-brain.loca.lt";
+const AI_API_URL = import.meta.env.VITE_AI_API_URL || "http://localhost:8000";
 
 /**
  * MISSION: Deep-Brain Integration

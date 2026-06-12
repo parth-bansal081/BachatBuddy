@@ -48,54 +48,51 @@ export function AppSidebar() {
     if (nextCount === 3) {
       handleSystemReset();
     }
-    // Timeout to reset counts
     setTimeout(() => setClickCount(0), 3000);
   };
 
   return (
-    <Sidebar className="border-none bg-card/50 backdrop-blur-xl m-4 h-[calc(100vh-2rem)] rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-      <SidebarHeader className="p-6 border-b border-white/5 pb-8">
-        <div className="flex items-center gap-4 cursor-pointer" onClick={onLogoClick} title="BachatBuddy v1.0">
-          <div className="relative group">
-            <div className="absolute -inset-2 bg-gradient-to-r from-primary to-accent opacity-20 blur-lg rounded-full group-hover:opacity-30 transition-opacity duration-500" />
-            <div className="relative h-12 w-12 bg-white/10 rounded-xl flex items-center justify-center border border-white/10 shadow-md backdrop-blur-sm">
-              <img src="/BachatBuddy.png" alt="BB" className="h-full w-full object-contain p-1 opacity-90 hover:opacity-100 transition-opacity" />
+    <Sidebar className="border-r border-border/50 bg-sidebar m-0 h-screen rounded-none overflow-hidden">
+      <SidebarHeader className="p-5 border-b border-sidebar-border/50">
+        <div className="flex items-center gap-3 cursor-pointer" onClick={onLogoClick} title="BachatBuddy v1.0">
+          <div className="relative">
+            <div className="absolute -inset-2 bg-gradient-to-r from-primary to-accent opacity-20 blur-xl rounded-full" />
+            <div className="relative h-10 w-10 bg-sidebar-accent rounded-xl flex items-center justify-center border border-sidebar-border shadow-sm">
+              <img src="/BachatBuddy.png" alt="BB" className="h-full w-full object-contain p-1 opacity-90" />
             </div>
           </div>
           <div className="flex flex-col">
-            <h1 className="text-xl font-black text-white tracking-tight">
+            <h1 className="text-base font-bold text-sidebar-foreground tracking-tight">
               BachatBuddy
             </h1>
-            <div className="flex items-center gap-2">
-              <span className="px-1.5 py-0.5 rounded-md bg-accent text-[9px] font-bold text-slate-900 border border-yellow-500 shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]">
-                PREMIUM
-              </span>
-            </div>
+            <span className="px-1.5 py-0.5 rounded-md bg-accent text-[9px] font-bold text-accent-foreground w-fit border border-accent/50">
+              PREMIUM
+            </span>
           </div>
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="px-4 py-6">
+      <SidebarContent className="px-3 py-4">
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
+            <SidebarMenu className="space-y-0.5">
               {menuItems.map((item) => {
                 const isActive = location.pathname === item.url;
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild className="h-12 group my-1" isActive={isActive}>
+                    <SidebarMenuButton asChild isActive={isActive}>
                       <Link
                         to={item.url}
                         className={`
-                          flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200 relative overflow-hidden font-medium
+                          flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 font-medium text-sm
                           ${isActive
-                            ? "bg-primary text-primary-foreground shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] translate-x-1"
-                            : "text-muted-foreground hover:text-white hover:bg-white/5 hover:translate-x-1"
+                            ? "bg-primary text-primary-foreground shadow-elevation-2"
+                            : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
                           }
                         `}
                       >
-                        <item.icon className={`h-5 w-5 z-10 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
-                        <span className="z-10">{item.title}</span>
+                        <item.icon className={`h-4.5 w-4.5 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`} />
+                        <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -106,18 +103,18 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-white/5 bg-black/20 backdrop-blur-md">
-        <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group border border-transparent hover:border-white/10">
-          <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-primary via-teal-100 to-accent p-[1.5px] shadow-sm">
-            <div className="h-full w-full rounded-full bg-slate-900 flex items-center justify-center">
-              <User className="h-5 w-5 text-white group-hover:text-accent transition-colors" />
+      <SidebarFooter className="p-3 border-t border-sidebar-border/50">
+        <div className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-sidebar-accent/50 transition-colors cursor-pointer group">
+          <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-primary via-primary/50 to-accent p-[1.5px] shrink-0">
+            <div className="h-full w-full rounded-full bg-sidebar flex items-center justify-center">
+              <User className="h-4 w-4 text-sidebar-foreground/70 group-hover:text-accent transition-colors" />
             </div>
           </div>
           <div className="flex flex-col min-w-0">
-            <p className="text-sm font-semibold text-white group-hover:text-primary transition-colors truncate">
+            <p className="text-sm font-semibold text-sidebar-foreground truncate">
               {profile?.full_name || "User"}
             </p>
-            <p className="text-[10px] text-muted-foreground truncate max-w-[120px]">
+            <p className="text-[10px] text-sidebar-foreground/50 truncate max-w-[110px]">
               {profile?.email || ""}
             </p>
           </div>

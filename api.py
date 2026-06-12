@@ -12,10 +12,17 @@ from bachat_buddy_ai.main import run_analysis
 
 app = FastAPI(title="BachatBuddy AI API")
 
-# CORSMiddleware to allow requests from Vercel frontend
+# CORSMiddleware to allow requests from Vercel frontend and local development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # For sandbox/Vercel compatibility
+    allow_origins=[
+        "https://bachatbuddy-hq.vercel.app",
+        "http://localhost:8080",
+        "http://localhost:5173",
+        "http://127.0.0.1:8080",
+        "http://127.0.0.1:5173"
+    ],
+    allow_origin_regex=r"https://.*\.vercel\.app|https://.*\.loca\.lt|http://localhost(:\d+)?|http://127\.0\.0\.1(:\d+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,15 +1,16 @@
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { CardContent } from "@/components/ui/card";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { Input } from "@/components/ui/input";
 import { Pencil, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/data";
+import { cn } from "@/lib/utils";
 
 interface SummaryCardProps {
   title: string;
   value: number;
-  icon: ReactNode;
+  icon: React.ReactNode;
   variant?: "default" | "primary" | "success" | "warning" | "destructive";
   editable?: boolean;
   onValueChange?: (value: number) => void;
@@ -18,12 +19,20 @@ interface SummaryCardProps {
   currencyCode?: string;
 }
 
-const variantStyles = {
-  default: "bg-card/40 backdrop-blur-md",
-  primary: "bg-primary/10 border-primary/20",
-  success: "bg-emerald-500/10 border-emerald-500/20",
-  warning: "bg-amber-500/10 border-amber-500/20",
-  destructive: "bg-red-500/10 border-red-500/20",
+const variantAccent = {
+  default: "border-l-primary/20",
+  primary: "border-l-primary",
+  success: "border-l-success",
+  warning: "border-l-warning",
+  destructive: "border-l-destructive",
+};
+
+const variantIconBg = {
+  default: "bg-muted text-muted-foreground",
+  primary: "bg-primary/15 text-primary",
+  success: "bg-success/15 text-success",
+  warning: "bg-warning/15 text-warning",
+  destructive: "bg-destructive/15 text-destructive",
 };
 
 export function SummaryCard({
@@ -33,69 +42,53 @@ export function SummaryCard({
   variant = "default",
   editable = false,
   onValueChange,
-  valueClassName,
   className,
   currencyCode,
 }: SummaryCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(value.toString());
+
   const handleSave = () => {
     const numValue = parseFloat(inputValue.replace(/,/g, ""));
-    if (!isNaN(numValue) && onValueChange) {
-      onValueChange(numValue);
-    }
+    if (!isNaN(numValue) && onValueChange) onValueChange(numValue);
     setIsEditing(false);
   };
 
   return (
-    <SpotlightCard
-      className={`overflow-hidden ${variantStyles[variant]} ${className || ""}`}
-      spotlightColor="rgba(20, 184, 166, 0.15)"
-    >
-      <CardContent className="p-6 relative">
-        <div className="flex items-center justify-between relative z-10">
-          <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-xl border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] ${variant === 'primary'
-              ? 'bg-primary border-primary text-primary-foreground'
-              : 'bg-white/5 border-white/10 text-slate-200'
-              }`}>
+    <SpotlightCard className={cn("h-full", className)}>
+      <CardContent className="p-5 h-full flex flex-col justify-between">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`p-2.5 rounded-xl ${variantIconBg[variant]}`}>
               {icon}
             </div>
-            <p className="text-sm font-medium text-muted-foreground/80 tracking-wide uppercase text-[10px]">{title}</p>
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+              {title}
+            </span>
           </div>
-          {editable && !isEditing && (
+          {editable && (
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-white/10"
-              onClick={() => setIsEditing(true)}
+              className="h-7 w-7 text-muted-foreground/50 hover:text-foreground"
+              onClick={() => isEditing ? handleSave() : setIsEditing(true)}
             >
-              <Pencil className="h-4 w-4" />
-            </Button>
-          )}
-          {editable && isEditing && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-primary hover:text-primary/80 hover:bg-primary/10"
-              onClick={handleSave}
-            >
-              <Check className="h-4 w-4" />
+              {isEditing ? <Check className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
             </Button>
           )}
         </div>
-        <div className="mt-4 relative z-10">
+        <div className="mt-auto pt-4 flex-1 flex items-center">
           {isEditing ? (
             <Input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              className="text-3xl font-bold h-auto py-1 bg-transparent border-b border-primary/50 rounded-none focus-visible:ring-0 px-0"
+              className="text-2xl font-bold h-auto py-1 bg-transparent border-b-2 border-primary/40 rounded-none focus-visible:ring-0 px-0 w-full"
               autoFocus
             />
           ) : (
-            <p className={`text-3xl font-bold tracking-tight text-foreground ${valueClassName}`}>
+            <p className="text-2xl font-bold tracking-tight text-foreground">
               {formatCurrency(value, currencyCode)}
             </p>
           )}

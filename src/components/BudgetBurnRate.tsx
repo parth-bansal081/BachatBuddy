@@ -6,9 +6,10 @@ import { formatCurrency } from "@/lib/data";
 interface BudgetBurnRateProps {
     totalBudget: number;
     totalSpent: number;
+    className?: string;
 }
 
-export function BudgetBurnRate({ totalBudget, totalSpent }: BudgetBurnRateProps) {
+export function BudgetBurnRate({ totalBudget, totalSpent, className }: BudgetBurnRateProps) {
     const now = new Date();
     const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
     const currentDay = now.getDate();
@@ -27,20 +28,20 @@ export function BudgetBurnRate({ totalBudget, totalSpent }: BudgetBurnRateProps)
 
     // Colors for the gauge based on burn rate
     const getGaugeColor = () => {
-        if (burnRate > 1.2) return "#ef4444"; // Red - Danger
-        if (burnRate > 1.0) return "#f59e0b"; // Amber - Warning
-        return "#10b981"; // Emerald - Good
+        if (burnRate > 1.2) return "hsl(var(--destructive))";
+        if (burnRate > 1.0) return "hsl(var(--warning))";
+        return "hsl(var(--success))";
     };
 
     return (
-        <Card className="shadow-card hover:shadow-lg transition-shadow duration-200 h-full">
+        <Card className={`shadow-elevation-2 hover:shadow-elevation-3 transition-shadow duration-200 h-full ${className || ""}`}>
             <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-semibold flex items-center justify-between">
                     <span>Budget Burn Rate</span>
                     {isSpendingTooFast ? (
                         <AlertTriangle className="h-5 w-5 text-destructive animate-pulse" />
                     ) : (
-                        <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                        <CheckCircle2 className="h-5 w-5 text-success" />
                     )}
                 </CardTitle>
             </CardHeader>
