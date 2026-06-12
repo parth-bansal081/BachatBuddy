@@ -40,7 +40,7 @@ function Bar({ item, index, maxValue, totalBars, width, maxHeight }: {
 
   return (
     <group position={[xPos, 0, 0]}>
-      <animated.group position={springY.to((h) => [0, h / 2, 0])}>
+      <animated.group position={[0, springY.to((h) => h / 2), 0]}>
         <RoundedBox
           ref={meshRef}
           args={[barWidth * 0.8, normalizedH, barWidth * 0.8]}

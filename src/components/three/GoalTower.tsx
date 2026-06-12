@@ -92,7 +92,7 @@ function TowerSegment({
       position={[0, yPos, 0]}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
-      scale={scaleY.to((s) => [1, s, 1])}
+      scale={[1, scaleY, 1]}
     >
       <mesh>
         <boxGeometry args={[2, height, 2]} />

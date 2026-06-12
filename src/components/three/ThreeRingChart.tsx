@@ -65,7 +65,7 @@ function Segment({
   const extrudeSettings = { steps: 1, depth: extrusionDepth, bevelEnabled: false };
 
   return (
-    <animated.group position={offset.to((z) => [0, 0, z])}>
+    <animated.group position={[0, 0, offset]}>
       <mesh
         ref={meshRef}
         onPointerOver={() => setHovered(true)}

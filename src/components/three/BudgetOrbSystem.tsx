@@ -89,7 +89,7 @@ function BudgetOrb({ orb, index, totalOrbs, orbitalRadius }: OrbProps) {
 
   return (
     <animated.group
-      position={positionY.to((yVal) => [x, yVal, z])}
+      position={[x, positionY, z]}
       scale={scale}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
