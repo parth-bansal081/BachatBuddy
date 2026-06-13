@@ -4,9 +4,9 @@ import { calculateSafeToSpend, calculateActualBurn } from "@/utils/financialPhys
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { BudgetGoal, Transaction, formatCurrency } from "@/lib/data";
+import { BudgetGoal, Transaction } from "@/lib/data";
 import ReactMarkdown from 'react-markdown';
-import { SpendingChart } from "./SpendingChart";
+import { SpendingTrendsChart } from "./SpendingTrendsChart";
 
 interface AIChatbotProps {
   budgets: BudgetGoal[];
@@ -45,7 +45,7 @@ export function AIChatbot({ budgets, transactions, income, totalExpenses, remain
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isOpen]); // Trigger on messages or open
+  }, [messages, isOpen]);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -67,7 +67,6 @@ export function AIChatbot({ budgets, transactions, income, totalExpenses, remain
     setIsLoading(true);
 
     try {
-      // --- EMERALD ADVISOR: LOCAL THINKING ENGINE ---
       const lowerInput = userMessage.content.toLowerCase();
 
       if (lowerInput.includes("afford") || lowerInput.includes("buy")) {
@@ -77,13 +76,11 @@ export function AIChatbot({ budgets, transactions, income, totalExpenses, remain
           const cost = Number(amountMatch[0].replace(/,/g, ''));
           await new Promise(r => setTimeout(r, 800));
 
-          const target = savingsTarget || 10000; // Force fallback
-          const projectedBalance = remainingBalance - cost;
-          const surplus = income - totalExpenses - target; // Surplus logic from Prompt
+          const target = savingsTarget || 10000;
+          const surplus = income - totalExpenses - target;
 
           let responseText = "";
 
-          // Strict Logic: Can I afford it? (Surplus - Cost >= 0)
           if (surplus >= cost) {
             responseText = `✅ **Green Light**: You can afford this! You have a surplus of ${currencySymbol}${surplus} after meeting your goals.`;
           } else {
@@ -103,27 +100,23 @@ export function AIChatbot({ budgets, transactions, income, totalExpenses, remain
         }
       }
 
-      // Calculate Metrics using Shared Utility
       const { dailySafeAmount } = calculateSafeToSpend(income, savingsTarget || 0, totalExpenses);
       const { actualBurnRate } = calculateActualBurn(totalExpenses);
       const dailyBurnRate = actualBurnRate;
 
-      // Forensics: Get last 20 transactions
       const recentActivity = transactions
         .slice(0, 20)
         .map(t => ({
           date: t.date,
           amount: t.amount,
           category: t.category,
-          name: t.merchant || t.category // Fallback if name missing
+          name: t.merchant || t.category
         }));
 
-      // Validation
       if (!userMessage.content.trim()) return;
 
-      // Data Sanitization
       const sanitizedSnapshot = {
-        income: income, // Use real income
+        income: income,
         totalExpenses: totalExpenses,
         savingsTarget: savingsTarget || 0,
         remainingBalance: remainingBalance,
@@ -132,7 +125,6 @@ export function AIChatbot({ budgets, transactions, income, totalExpenses, remain
         recentTransactions: recentActivity.length > 0 ? recentActivity : [{ date: new Date().toISOString(), amount: 0, category: "Info", name: "No recent transactions" }]
       };
 
-      // Call Vercel API
       const payload = {
         message: userMessage.content,
         context: {
@@ -199,8 +191,7 @@ export function AIChatbot({ budgets, transactions, income, totalExpenses, remain
       {/* Floating Button */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 transition-all duration-300 ${isOpen ? "bg-destructive hover:bg-destructive/90" : "bg-black border border-white/10 hover:scale-105"
-          }`}
+        className={`fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 transition-all duration-300 ${isOpen ? "bg-destructive hover:bg-destructive/90" : "bg-black border border-white/10 hover:scale-105"}`}
       >
         {isOpen ? (
           <X className="h-6 w-6" />
@@ -226,20 +217,16 @@ export function AIChatbot({ budgets, transactions, income, totalExpenses, remain
             </div>
           </div>
 
-          {/* Messages */}
+          {/* Messages Feed */}
           <div className="flex-1 p-4 overflow-y-auto max-h-[450px] scroll-smooth custom-scrollbar" ref={scrollRef}>
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex gap-3 ${message.role === "user" ? "flex-row-reverse" : ""
-                    }`}
+                  className={`flex gap-3 ${message.role === "user" ? "flex-row-reverse" : ""}`}
                 >
                   <div
-                    className={`p-2 rounded-full shrink-0 ${message.role === "user"
-                      ? "bg-primary/20"
-                      : "bg-secondary"
-                      }`}
+                    className={`p-2 rounded-full shrink-0 ${message.role === "user" ? "bg-primary/20" : "bg-secondary"}`}
                   >
                     {message.role === "user" ? (
                       <User className="h-4 w-4 text-primary" />
@@ -248,10 +235,7 @@ export function AIChatbot({ budgets, transactions, income, totalExpenses, remain
                     )}
                   </div>
                   <div
-                    className={`px-4 py-2.5 rounded-2xl max-w-[80%] ${message.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-foreground"
-                      }`}
+                    className={`px-4 py-2.5 rounded-2xl max-w-[80%] ${message.role === "user" ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"}`}
                   >
                     {message.role === "user" ? (
                       <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -267,7 +251,8 @@ export function AIChatbot({ budgets, transactions, income, totalExpenses, remain
                               if (!inline && isChart) {
                                 try {
                                   const data = JSON.parse(String(children).replace(/\n/g, ''));
-                                  return <SpendingChart data={data} />;
+                                  {/* ⚡ FIXED: Dynamically calls the synchronized SpendingTrendsChart component mapping */}
+                                  return <SpendingTrendsChart data={data} />;
                                 } catch (e) {
                                   return <code className={className} {...props}>{children}</code>;
                                 }
@@ -295,12 +280,11 @@ export function AIChatbot({ budgets, transactions, income, totalExpenses, remain
                   </div>
                 </div>
               )}
-              {/* Invisible element to scroll to */}
               <div ref={messagesEndRef} />
             </div>
           </div>
 
-          {/* Input */}
+          {/* Input Tracking Deck */}
           <div className="p-4 border-t border-border mt-auto">
             <div className="flex gap-2">
               <Input
