@@ -1,123 +1,75 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BudgetGoal, formatCurrency, categoryTextColors } from "@/lib/data";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { Pencil, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { BudgetGoal } from "@/lib/data";
+import { Pencil } from "lucide-react";
 
 interface BudgetProgressProps {
   budgets: BudgetGoal[];
-  onBudgetChange: (category: string, newBudget: number) => void;
+  onBudgetChange?: (category: string, newBudget: number) => void;
   currencyCode?: string;
+  className?: string;
 }
 
-export function BudgetProgress({ budgets, onBudgetChange, currencyCode }: BudgetProgressProps) {
-  const [editingCategory, setEditingCategory] = useState<string | null>(null);
-  const [inputValue, setInputValue] = useState("");
-
-  const handleEdit = (category: string, currentBudget: number) => {
-    setEditingCategory(category);
-    setInputValue(currentBudget.toString());
-  };
-
-  const handleSave = (category: string) => {
-    const numValue = parseFloat(inputValue.replace(/,/g, ""));
-    if (!isNaN(numValue)) {
-      onBudgetChange(category, numValue);
-    }
-    setEditingCategory(null);
-  };
+export const BudgetProgress = ({ budgets, onBudgetChange, currencyCode = "INR", className = "" }: BudgetProgressProps) => {
+  const symbol = currencyCode === "USD" ? "$" : "₹";
 
   return (
-    <Card className="shadow-card">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-lg font-semibold">Monthly Budget Goals</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        {budgets.map((item) => {
-          const percentage = Math.min((item.spent / item.budget) * 100, 100);
-          const isOverBudget = item.spent > item.budget;
-          const isEditing = editingCategory === item.category;
+    <Card className={`card-glass rounded-xl border border-white/5 bg-[#131C2E]/30 shadow-elevation-2 ${className}`}>
+      <CardContent className="p-5">
+        <div className="pb-3 border-b border-white/[0.04] mb-4">
+          <h3 className="text-sm font-semibold tracking-tight text-white">Monthly Budget Goals</h3>
+          <p className="text-[11px] text-muted-foreground">Category target expenditure tracks</p>
+        </div>
 
-          return (
-            <div key={item.category} className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className={`text-sm font-medium ${categoryTextColors[item.category]}`}>
-                  {item.category}
-                </span>
-                <div className="flex items-center gap-2">
-                  {isEditing ? (
-                    <>
-                      <Input
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSave(item.category)}
-                        className="h-7 w-24 text-sm text-right"
-                        autoFocus
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-primary"
-                        onClick={() => handleSave(item.category)}
-                      >
-                        <Check className="h-3 w-3" />
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-sm text-muted-foreground">
-                        {formatCurrency(item.spent, currencyCode)} / {formatCurrency(item.budget, currencyCode)}
+        <div className="space-y-4">
+          {budgets.map((item) => {
+            const isOver = item.spent > item.budget;
+            const overAmount = item.spent - item.budget;
+            const percentage = Math.min(100, (item.spent / (item.budget || 1)) * 100);
+
+            return (
+              <div key={item.category} className="space-y-2 min-w-0">
+                {/* Upper Value Row Layout */}
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-xs font-medium text-white truncate pt-0.5">{item.category}</span>
+                  
+                  {/* ⚡ ANTI-OVERLAP BOX: Dynamic text stacking via flex-col items-end */}
+                  <div className="flex flex-col items-end text-right shrink-0 min-w-0">
+                    <div className="flex items-center gap-1.5 text-xs">
+                      <span className={`${isOver ? "text-red-400 font-bold" : "text-white"}`}>
+                        {symbol}{item.spent.toLocaleString()}
                       </span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                        onClick={() => handleEdit(item.category, item.budget)}
-                      >
+                      <span className="text-muted-foreground">/</span>
+                      <span className="text-muted-foreground/70">
+                        {symbol}{item.budget.toLocaleString()}
+                      </span>
+                      <button className="text-muted-foreground/40 hover:text-primary transition-colors p-0.5 rounded ml-0.5">
                         <Pencil className="h-3 w-3" />
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="relative">
-                {item.budget > 0 ? (
-                  <>
-                    <Progress
-                      value={percentage}
-                      className={`h-2 transition-all [&>div]:transition-all ${isOverBudget
-                        ? "[&>div]:bg-destructive"
-                        : percentage > 85
-                          ? "[&>div]:bg-warning [&>div]:shadow-[0_0_10px_hsl(var(--warning))]"
-                          : (item.category === 'Groceries' || item.category === 'Education')
-                            ? "[&>div]:bg-[hsl(var(--chart-3))] [&>div]:shadow-[0_0_10px_hsl(var(--chart-3))]"
-                            : (item.category === 'Entertainment' || item.category === 'Eating Out' || item.category === 'Lifestyle')
-                              ? "[&>div]:bg-[hsl(var(--chart-2))] [&>div]:shadow-[0_0_10px_hsl(var(--chart-2))]"
-                              : (item.category === 'Transport')
-                                ? "[&>div]:bg-[hsl(var(--chart-5))] [&>div]:shadow-[0_0_10px_hsl(var(--chart-5))]"
-                                : "[&>div]:bg-primary"
-                        }`}
-                    />
-                    {isOverBudget && (
-                      <span className="absolute right-0 -top-5 text-xs text-destructive font-medium">
-                        Over by {formatCurrency(item.spent - item.budget, currencyCode)}
+                      </button>
+                    </div>
+                    
+                    {/* Overshoot Warning Tag - Isolated to a stacked layout row */}
+                    {isOver && (
+                      <span className="text-[10px] font-medium text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded mt-1 border border-red-500/10 tracking-tight animate-pulse">
+                        Over by {symbol}{overAmount.toLocaleString()}
                       </span>
                     )}
-                  </>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground italic">Budget not set</span>
-                    <Progress value={0} className="h-2 w-full ml-4 bg-muted/20" />
                   </div>
-                )}
+                </div>
+
+                {/* Performance Progress Bar Line Asset */}
+                <div className="relative pt-0.5">
+                  <Progress 
+                    value={percentage} 
+                    className="h-1.5 bg-white/5 rounded-full overflow-hidden" 
+                    indicatorClassName={`${isOver ? "bg-red-500" : "bg-amber-500"}`}
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </CardContent>
     </Card>
   );
-}
+};
